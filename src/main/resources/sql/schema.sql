@@ -1,0 +1,18 @@
+--CREATE TABLE IF NOT EXISTS customers(
+--    id INT(3) AUTO_INCREMENT PRIMARY KEY,
+--    name VARCHAR(40) NOT NULL,
+--    queueType INT,
+--    FOREIGN KEY (queueType) REFERENCES queue(id)
+--);
+
+CREATE TABLE IF NOT EXISTS queues(
+    id INT(3) AUTO_INCREMENT PRIMARY KEY,
+    queueType VARCHAR(40) NOT NULL,
+    status ENUM('ACTIVE', 'PAUSED', 'CLOSED') DEFAULT 'ACTIVE'
+);
+
+CREATE TABLE IF NOT EXISTS admins(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(40) NOT NULL,
+    password VARCHAR(40) NOT NULL
+)

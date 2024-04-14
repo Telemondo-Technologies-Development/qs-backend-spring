@@ -3,9 +3,14 @@ package com.telemondo.qs
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
+
 @SpringBootApplication
-class QsBackendApplication
+
+class QueueManagementSystem{
+}
 
 fun main(args: Array<String>) {
-	runApplication<QsBackendApplication>(*args)
+	runApplication<QueueManagementSystem>(*args)
+
+//	val Count
 }
