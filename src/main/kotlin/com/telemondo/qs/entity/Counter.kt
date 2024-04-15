@@ -6,19 +6,15 @@ import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
-import java.time.Instant
 
 @Entity
-data class Queue(
+data class Counter (
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     val id: String,
+    val name: String,
+    val status: Int = 3,
     @ManyToOne
     @JoinColumn(name = "counter_type_id")
-    val counterType: CounterType,
-    val status: Int = 1,
-    val createdAt: Instant,
-    val lastUpdated: Instant
-//    removed this because this can be a transient property, no need to permanently store to database
-//    val currentSize: Int
+    val counterType: CounterType
 )

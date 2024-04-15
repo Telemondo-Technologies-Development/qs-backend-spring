@@ -1,6 +1,6 @@
 package com.telemondo.qs.queue
 
-class QueueImpl<T> : Queue<T> {
+class QueueServiceImpl<T> : QueueService<T> {
 
     private val storage = arrayListOf<T>()
 
@@ -11,7 +11,7 @@ class QueueImpl<T> : Queue<T> {
         get() = count == 0
 
     override fun enqueue(element: T): Boolean {
-        return list.add(element)
+        return storage.add(element)
     }
 
     override fun dequeue(): T? {
