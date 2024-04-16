@@ -6,6 +6,7 @@ import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
+import java.time.Instant
 
 @Entity
 data class Counter (
@@ -16,5 +17,7 @@ data class Counter (
     val status: Int = 3,
     @ManyToOne
     @JoinColumn(name = "counter_type_id")
-    val counterType: CounterType
+    val counterType: CounterType,
+    val createdAt: Instant,
+    val lastUpdated: Instant
 )

@@ -28,10 +28,14 @@ CREATE TABLE IF NOT EXISTS counters(
     status INT DEFAULT 3,
     counter_type_id VARCHAR(36) NOT NULL,
     FOREIGN KEY (counter_type_id) REFERENCES counter_types(id)
+    created_at TIMESTAMP NOT NULL,
+    last_updated TIMESTAMP NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS counter_types(
     id VARCHAR(36) PRIMARY KEY,
     counter_type VARCHAR(36) NOT NULL
+    created_at TIMESTAMP NOT NULL,
+    last_updated TIMESTAMP NOT NULL
 )
 
