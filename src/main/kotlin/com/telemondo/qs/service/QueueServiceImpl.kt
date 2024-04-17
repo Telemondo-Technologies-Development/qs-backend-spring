@@ -1,4 +1,4 @@
-package com.telemondo.qs.queue
+package com.telemondo.qs.service
 
 class QueueServiceImpl<T> : QueueService<T> {
 

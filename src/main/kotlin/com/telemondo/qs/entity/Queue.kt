@@ -16,9 +16,12 @@ data class Queue(
     @ManyToOne
     @JoinColumn(name = "counter_type_id")
     val counterType: CounterType,
+    @ManyToOne
+    @JoinColumn(name = "counter_id")
+    val counter: Counter,
     val status: Int = 1,
     val createdAt: Instant,
-    val lastUpdated: Instant
+    val updatedAt: Instant
 //    removed this because this can be a transient property, no need to permanently store to database
 //    val currentSize: Int
 )

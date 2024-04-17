@@ -1,7 +1,6 @@
 package com.telemondo.qs
 
 
-import com.telemondo.qs.queue.QueueServiceImpl
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 

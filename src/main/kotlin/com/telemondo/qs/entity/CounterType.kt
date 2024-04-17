@@ -13,5 +13,5 @@ data class CounterType(
     val id: String,
     val counterType: String,
     val createdAt: Instant,
-    val lastUpdated: Instant
+    val updatedAt: Instant
 )

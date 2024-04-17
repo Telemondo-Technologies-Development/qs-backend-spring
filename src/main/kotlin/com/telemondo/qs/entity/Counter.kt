@@ -14,10 +14,10 @@ data class Counter (
     @GeneratedValue(strategy = GenerationType.UUID)
     val id: String,
     val name: String,
-    val status: Int = 3,
+    val status: Int = -1,
     @ManyToOne
     @JoinColumn(name = "counter_type_id")
     val counterType: CounterType,
     val createdAt: Instant,
-    val lastUpdated: Instant
+    val updatedAt: Instant
 )
