@@ -1,17 +1,30 @@
 package com.telemondo.qs.entity
 
-import jakarta.persistence.Entity
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
-import jakarta.persistence.Id
+import jakarta.persistence.*
+import lombok.Data
+import org.hibernate.annotations.CreationTimestamp
+import org.hibernate.annotations.UpdateTimestamp
 import java.time.Instant
+import java.util.Date
 
 @Entity
+@Table(name = "counter_type")
 data class CounterType(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     val id: String,
-    val counterType: String,
-    val createdAt: Instant,
-    val updatedAt: Instant
+
+    @Column(name = "counterName", nullable = false)
+    var counterName: String,
+
+    @CreationTimestamp
+    var createdAt: Date? = null,
+
+    @UpdateTimestamp
+    var updatedAt: Date? = null
 )
+
+/*
+Is the data should like this in the database?
+Unique ID | Counter Name | Created At | Updated At
+ */
