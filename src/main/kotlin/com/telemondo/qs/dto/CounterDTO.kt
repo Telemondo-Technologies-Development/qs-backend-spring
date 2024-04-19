@@ -7,7 +7,15 @@ data class CounterDTO(
     val id: String,
     val name: String,
     val status: Int = -1,
-    val counterType: CounterTypeDTO,
+//    val counterType: CounterTypeDTO,
+    val createdAt: Instant,
+    val updatedAt: Instant
+)
+
+data class CounterCreateDTO(
+    val name: String,
+    val status: Int = -1,
+//    val counterType: CounterTypeDTO,
     val createdAt: Instant,
     val updatedAt: Instant
 )
