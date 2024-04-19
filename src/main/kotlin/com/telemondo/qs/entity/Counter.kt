@@ -9,15 +9,16 @@ import jakarta.persistence.ManyToOne
 import java.time.Instant
 
 @Entity
-data class Counter (
+open class Counter {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    val id: String,
-    val name: String,
-    val status: Int = -1,
+    open lateinit var id: String
+    open lateinit var name: String
+    open var status: Int = -1
+
     @ManyToOne
     @JoinColumn(name = "counter_type_id")
-    val counterType: CounterType,
-    val createdAt: Instant,
-    val updatedAt: Instant
-)
+    open var counterType: CounterType? = null
+    open lateinit var createdAt: Instant
+    open lateinit var updatedAt: Instant
+}

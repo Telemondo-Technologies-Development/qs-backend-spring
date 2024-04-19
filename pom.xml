@@ -59,55 +59,149 @@
 		<dependency>
 			<groupId>org.mapstruct</groupId>
 			<artifactId>mapstruct</artifactId>
-			<version>1.5.5.Final</version>
+			<version>${org.mapstruct.version}</version>
 		</dependency>
 	</dependencies>
+
+<!--	<build>-->
+<!--		<sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>-->
+<!--		<testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>-->
+<!--		<plugins>-->
+<!--&lt;!&ndash;			<plugin>&ndash;&gt;-->
+<!--&lt;!&ndash;				<groupId>org.jetbrains.kotlin</groupId>&ndash;&gt;-->
+<!--&lt;!&ndash;				<artifactId>kotlin-maven-plugin</artifactId>&ndash;&gt;-->
+<!--&lt;!&ndash;				<configuration>&ndash;&gt;-->
+<!--&lt;!&ndash;					<args>&ndash;&gt;-->
+<!--&lt;!&ndash;						<arg>-Xjsr305=strict</arg>&ndash;&gt;-->
+<!--&lt;!&ndash;					</args>&ndash;&gt;-->
+<!--&lt;!&ndash;					<compilerPlugins>&ndash;&gt;-->
+<!--&lt;!&ndash;						<plugin>spring</plugin>&ndash;&gt;-->
+<!--&lt;!&ndash;						<plugin>jpa</plugin>&ndash;&gt;-->
+<!--&lt;!&ndash;					</compilerPlugins>&ndash;&gt;-->
+<!--&lt;!&ndash;				</configuration>&ndash;&gt;-->
+<!--&lt;!&ndash;				<dependencies>&ndash;&gt;-->
+<!--&lt;!&ndash;					<dependency>&ndash;&gt;-->
+<!--&lt;!&ndash;						<groupId>org.jetbrains.kotlin</groupId>&ndash;&gt;-->
+<!--&lt;!&ndash;						<artifactId>kotlin-maven-allopen</artifactId>&ndash;&gt;-->
+<!--&lt;!&ndash;						<version>${kotlin.version}</version>&ndash;&gt;-->
+<!--&lt;!&ndash;					</dependency>&ndash;&gt;-->
+<!--&lt;!&ndash;					<dependency>&ndash;&gt;-->
+<!--&lt;!&ndash;						<groupId>org.jetbrains.kotlin</groupId>&ndash;&gt;-->
+<!--&lt;!&ndash;						<artifactId>kotlin-maven-noarg</artifactId>&ndash;&gt;-->
+<!--&lt;!&ndash;						<version>${kotlin.version}</version>&ndash;&gt;-->
+<!--&lt;!&ndash;					</dependency>&ndash;&gt;-->
+<!--&lt;!&ndash;				</dependencies>&ndash;&gt;-->
+<!--&lt;!&ndash;			</plugin>&ndash;&gt;-->
+<!--			<plugin>-->
+<!--				<artifactId>kotlin-maven-plugin</artifactId>-->
+<!--				<groupId>org.jetbrains.kotlin</groupId>-->
+<!--				&lt;!&ndash; other properties &ndash;&gt;-->
+<!--				<dependencies>-->
+<!--					&lt;!&ndash; other dependencies &ndash;&gt;-->
+<!--					<dependency>-->
+<!--						<groupId>org.mapstruct</groupId>-->
+<!--						<artifactId>mapstruct-processor</artifactId>-->
+<!--						<version>${org.mapstruct.version}</version>-->
+<!--					</dependency>-->
+<!--				</dependencies>-->
+<!--				<executions>-->
+<!--					<execution>-->
+<!--						<id>kapt</id>-->
+<!--						<goals>-->
+<!--							<goal>kapt</goal>-->
+<!--						</goals>-->
+<!--						<configuration>-->
+<!--							<sourceDirs>-->
+<!--								<sourceDir>src/main/kotlin</sourceDir>-->
+<!--								<sourceDir>src/main/java</sourceDir>-->
+<!--							</sourceDirs>-->
+<!--							<annotationProcessorPaths>-->
+<!--								<annotationProcessorPath>-->
+<!--									<groupId>org.mapstruct</groupId>-->
+<!--									<artifactId>mapstruct-processor</artifactId>-->
+<!--									<version>${org.mapstruct.version}</version>-->
+<!--								</annotationProcessorPath>-->
+<!--							</annotationProcessorPaths>-->
+<!--						</configuration>-->
+<!--					</execution>-->
+<!--					<execution>-->
+<!--						<id>compile</id>-->
+<!--						<phase>compile</phase>-->
+<!--						<goals>-->
+<!--							<goal>compile</goal>-->
+<!--						</goals>-->
+<!--						<configuration>-->
+<!--							<sourceDirs>-->
+<!--								<sourceDir>${project.basedir}/src/main/kotlin</sourceDir>-->
+<!--								<sourceDir>${project.basedir}/src/main/java</sourceDir>-->
+<!--							</sourceDirs>-->
+<!--						</configuration>-->
+<!--					</execution>-->
+<!--					<execution>-->
+<!--						<id>test-compile</id>-->
+<!--						<phase>test-compile</phase>-->
+<!--						<goals>-->
+<!--							<goal>test-compile</goal>-->
+<!--						</goals>-->
+<!--						<configuration>-->
+<!--							<sourceDirs>-->
+<!--								<sourceDir>${project.basedir}/src/test/kotlin</sourceDir>-->
+<!--								<sourceDir>${project.basedir}/src/test/java</sourceDir>-->
+<!--							</sourceDirs>-->
+<!--						</configuration>-->
+<!--					</execution>-->
+<!--				</executions>-->
+<!--			</plugin>-->
+<!--			<plugin>-->
+<!--				<groupId>org.apache.maven.plugins</groupId>-->
+<!--				<artifactId>maven-compiler-plugin</artifactId>-->
+<!--				<version>3.5.1</version>-->
+<!--				<configuration>-->
+<!--					<source>1.8</source>-->
+<!--					<target>1.8</target>-->
+<!--				</configuration>-->
+<!--				<executions>-->
+<!--					&lt;!&ndash; Replacing default-compile as it is treated specially by maven &ndash;&gt;-->
+<!--					<execution>-->
+<!--						<id>default-compile</id>-->
+<!--						<phase>none</phase>-->
+<!--					</execution>-->
+<!--					&lt;!&ndash; Replacing default-testCompile as it is treated specially by maven &ndash;&gt;-->
+<!--					<execution>-->
+<!--						<id>default-testCompile</id>-->
+<!--						<phase>none</phase>-->
+<!--					</execution>-->
+<!--					<execution>-->
+<!--						<id>java-compile</id>-->
+<!--						<phase>compile</phase>-->
+<!--						<goals>-->
+<!--							<goal>compile</goal>-->
+<!--						</goals>-->
+<!--					</execution>-->
+<!--					<execution>-->
+<!--						<id>java-test-compile</id>-->
+<!--						<phase>test-compile</phase>-->
+<!--						<goals>-->
+<!--							<goal>testCompile</goal>-->
+<!--						</goals>-->
+<!--					</execution>-->
+<!--				</executions>-->
+<!--			</plugin>-->
+<!--			<plugin>-->
+<!--				<groupId>org.springframework.boot</groupId>-->
+<!--				<artifactId>spring-boot-maven-plugin</artifactId>-->
+<!--			</plugin>-->
+<!--		</plugins>-->
+<!--	</build>-->
 
 	<build>
 		<sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
 		<testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
 		<plugins>
 			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
-			<plugin>
 				<groupId>org.jetbrains.kotlin</groupId>
 				<artifactId>kotlin-maven-plugin</artifactId>
-				<configuration>
-					<args>
-						<arg>-Xjsr305=strict</arg>
-					</args>
-					<compilerPlugins>
-						<plugin>spring</plugin>
-						<plugin>jpa</plugin>
-					</compilerPlugins>
-				</configuration>
-				<dependencies>
-					<dependency>
-						<groupId>org.jetbrains.kotlin</groupId>
-						<artifactId>kotlin-maven-allopen</artifactId>
-						<version>${kotlin.version}</version>
-					</dependency>
-					<dependency>
-						<groupId>org.jetbrains.kotlin</groupId>
-						<artifactId>kotlin-maven-noarg</artifactId>
-						<version>${kotlin.version}</version>
-					</dependency>
-				</dependencies>
-			</plugin>
-			<plugin>
-				<artifactId>kotlin-maven-plugin</artifactId>
-				<groupId>org.jetbrains.kotlin</groupId>
-				<!-- other properties -->
-				<dependencies>
-					<!-- other dependencies -->
-					<dependency>
-						<groupId>org.mapstruct</groupId>
-						<artifactId>mapstruct-processor</artifactId>
-						<version>${mapstruct.version}</version>
-					</dependency>
-				</dependencies>
+				<version>${kotlin.version}</version>
 				<executions>
 					<execution>
 						<id>kapt</id>
@@ -116,18 +210,90 @@
 						</goals>
 						<configuration>
 							<sourceDirs>
-								<sourceDir>src/main/kotlin</sourceDir>
+								<sourceDir>${project.basedir}/src/main/kotlin</sourceDir>
+								<sourceDir>${project.basedir}/src/main/java</sourceDir>
 							</sourceDirs>
 							<annotationProcessorPaths>
 								<annotationProcessorPath>
 									<groupId>org.mapstruct</groupId>
 									<artifactId>mapstruct-processor</artifactId>
-									<version>${mapstruct.version}</version>
+									<version>${org.mapstruct.version}</version>
 								</annotationProcessorPath>
 							</annotationProcessorPaths>
 						</configuration>
 					</execution>
+					<execution>
+						<id>compile</id>
+						<phase>process-sources</phase>
+						<goals>
+							<goal>compile</goal>
+						</goals>
+						<configuration>
+							<sourceDirs>
+								<sourceDir>${project.basedir}/src/main/kotlin</sourceDir>
+								<sourceDir>${project.basedir}/src/main/java</sourceDir>
+							</sourceDirs>
+						</configuration>
+					</execution>
+					<execution>
+						<id>test-compile</id>
+						<phase>test-compile</phase>
+						<goals>
+							<goal>test-compile</goal>
+						</goals>
+						<configuration>
+							<sourceDirs>
+								<sourceDir>${project.basedir}/src/test/kotlin</sourceDir>
+								<sourceDir>${project.basedir}/src/test/java</sourceDir>
+							</sourceDirs>
+						</configuration>
+					</execution>
 				</executions>
+				<configuration>
+					<args>
+						<arg>-Xjsr305=strict</arg>
+					</args>
+					<compilerPlugins>
+						<plugin>spring</plugin>
+					</compilerPlugins>
+					<jvmTarget>17</jvmTarget>
+				</configuration>
+				<dependencies>
+					<dependency>
+						<groupId>org.jetbrains.kotlin</groupId>
+						<artifactId>kotlin-maven-allopen</artifactId>
+						<version>${kotlin.version}</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>3.1.2</version>
+				<configuration>
+					<includes>
+						<include>**/*Tests.java</include>
+						<include>**/*Test.java</include>
+					</includes>
+					<excludes>
+						<exclude>**/Abstract*.java</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>${java.version}</source>
+					<target>${java.version}</target>
+					<annotationProcessorPaths>
+						<path>
+							<groupId>org.mapstruct</groupId>
+							<artifactId>mapstruct-processor</artifactId>
+							<version>${org.mapstruct.version}</version>
+						</path>
+					</annotationProcessorPaths>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
