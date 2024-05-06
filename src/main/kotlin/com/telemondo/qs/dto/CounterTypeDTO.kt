@@ -1,10 +1,16 @@
 package com.telemondo.qs.dto
 
-import java.util.Date
+import java.time.Instant
 
 data class CounterTypeDTO(
     val id: String,
-    val counterType: String,
-    val createdAt: Date,
-    val updatedAt: Date
+    val counterName: String,
+    val createdAt: Instant,
+    val updatedAt: Instant
+)
+
+data class CounterTypeCreateDTO(
+    val counterName: String,
+    val createdAt: Instant,
+    val updatedAt: Instant
 )

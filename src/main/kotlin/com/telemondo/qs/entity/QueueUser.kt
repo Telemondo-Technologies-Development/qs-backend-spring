@@ -1,7 +1,6 @@
 package com.telemondo.qs.entity
 
-import com.fasterxml.jackson.annotation.JsonIgnore
-import com.fasterxml.jackson.annotation.JsonProperty
+import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
@@ -12,17 +11,23 @@ import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
 import java.time.Instant
 
+
 @Entity
-open class Counter {
+open class QueueUser{
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     open lateinit var id: String
-    open lateinit var name: String
-    open var status: Int = -1
+    @Column
+    open lateinit var ticketNum: String
 
     @ManyToOne
     @JoinColumn(name = "counter_type_id")
     open var counterType: CounterType? = null
+    @ManyToOne
+    @JoinColumn(name = "counter_id")
+    open var counter: Counter? = null
+    @Column
+    open var status: Int = 1
 
     @CreationTimestamp
     open lateinit var createdAt: Instant

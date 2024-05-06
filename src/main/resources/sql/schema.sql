@@ -11,33 +11,33 @@
 --    password VARCHAR(40) NOT NULL
 --)
 
-CREATE TABLE IF NOT EXISTS queues(
+CREATE TABLE IF NOT EXISTS counter_types (
     id VARCHAR(36) PRIMARY KEY,
-    counter_type_id VARCHAR(36) NOT NULL,
-    FOREIGN KEY (counter_type_id) REFERENCES counter_types(id)
-    counter_id VARCHAR(36) NOT NULL,
-    FOREIGN KEY (counter_id) REFERENCES counters(id)
---  -1 = cancelled, 1 = waiting, 2 = on-counter, 3 = complete
-    status INT DEFAULT 1,
-    created_at TIMESTAMP NOT NULL,
-    updated_at TIMESTAMP NOT NULL
+    counter_type VARCHAR(36) NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE IF NOT EXISTS counters(
+CREATE TABLE IF NOT EXISTS counters (
     id VARCHAR(36) PRIMARY KEY,
     name VARCHAR(36) NOT NULL,
---  -1 = inactive, 1 = active, 2 = pause,
+    --  -1 = inactive, 1 = receiving, 2 = entertaining, 3 = pause
     status INT DEFAULT -1,
     counter_type_id VARCHAR(36) NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (counter_type_id) REFERENCES counter_types(id)
-    created_at TIMESTAMP NOT NULL,
-    updated_at TIMESTAMP NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS counter_types(
+CREATE TABLE IF NOT EXISTS queue_users (
     id VARCHAR(36) PRIMARY KEY,
-    counter_type VARCHAR(36) NOT NULL
-    created_at TIMESTAMP NOT NULL,
-    updated_at TIMESTAMP NOT NULL
-)
-
+    ticket_num VARCHAR(36) NOT NULL,
+    counter_type_id VARCHAR(36) NOT NULL,
+    counter_id VARCHAR(36) NOT NULL,
+    --  -1 = cancelled, 1 = waiting, 2 = on-counter, 3 = complete
+    status INT DEFAULT 1,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (counter_type_id) REFERENCES counter_types(id),
+    FOREIGN KEY (counter_id) REFERENCES counters(id)
+);

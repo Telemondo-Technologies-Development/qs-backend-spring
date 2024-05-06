@@ -1,6 +1,6 @@
 package com.telemondo.qs.service
 
-class QueueServiceImpl<T> : QueueService<T> {
+class TRYQueueServiceImpl<T> : TRYQueueService<T> {
 
     private val storage = arrayListOf<T>()
 

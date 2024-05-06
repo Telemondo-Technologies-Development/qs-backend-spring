@@ -1,6 +1,6 @@
 package com.telemondo.qs.service
 
-interface QueueService<T> {
+interface TRYQueueService<T> {
     val count: Int
 
     val isEmpty: Boolean

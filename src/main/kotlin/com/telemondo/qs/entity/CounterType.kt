@@ -8,21 +8,18 @@ import java.time.Instant
 import java.util.Date
 
 @Entity
-@Table(name = "counter_type")
-data class CounterType(
+open class CounterType{
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    val id: String,
-
-    @Column(name = "counterName", nullable = false)
-    var counterName: String,
+    open lateinit var id: String
+    open lateinit var counterName: String
 
     @CreationTimestamp
-    var createdAt: Date? = null,
+    open lateinit var createdAt: Instant
 
     @UpdateTimestamp
-    var updatedAt: Date? = null
-)
+    open lateinit var updatedAt: Instant
+}
 
 /*
 Is the data should like this in the database?
