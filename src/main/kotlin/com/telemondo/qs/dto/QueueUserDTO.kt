@@ -18,7 +18,7 @@ data class QueueUserDTO(
 
 data class QueueUserCreateDTO(
     val counterTypeId: String,
-    val counterId : String,
+    val counterId : String?,
 //    val counter: CounterDTO?,
     val status: Int = 1,
     val createdAt: Instant,

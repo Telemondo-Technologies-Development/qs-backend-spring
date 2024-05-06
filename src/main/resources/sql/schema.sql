@@ -23,10 +23,12 @@ CREATE TABLE IF NOT EXISTS counters (
     name VARCHAR(36) NOT NULL,
     --  -1 = inactive, 1 = receiving, 2 = entertaining, 3 = pause
     status INT DEFAULT -1,
+    current_customer_id VARCHAR(36)
     counter_type_id VARCHAR(36) NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (counter_type_id) REFERENCES counter_types(id)
+    FOREIGN KEY (current_customer_id) REFERENCES queue_users(id)
 );
 
 CREATE TABLE IF NOT EXISTS queue_users (

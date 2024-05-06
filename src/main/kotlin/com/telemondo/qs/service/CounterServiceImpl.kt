@@ -6,18 +6,23 @@ import com.telemondo.qs.dto.CounterUpdateStatusDTO
 import com.telemondo.qs.entity.Counter
 import com.telemondo.qs.repository.CounterRepository
 import com.telemondo.qs.repository.CounterTypeRepository
+import com.telemondo.qs.repository.QueueUserRepository
 import com.telemondo.qs.utils.mapper.CounterMapper
 import jakarta.transaction.Transactional
 import org.mapstruct.MappingTarget
 import org.mapstruct.factory.Mappers
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.ZoneId
 
 @Service
 class CounterServiceImpl(
     private val counterRepository: CounterRepository,
     private val counterMapper: CounterMapper = Mappers.getMapper(CounterMapper::class.java),
-    private val counterTypeRepository: CounterTypeRepository
+    private val counterTypeRepository: CounterTypeRepository,
+    private val queueUserRepository: QueueUserRepository
 ): CounterService {
 
     @Transactional
@@ -93,6 +98,7 @@ class CounterServiceImpl(
 
     @Transactional
     override fun updateStatus(counterUpdateStatusDTO: CounterUpdateStatusDTO): CounterDTO {
+
         var counter = counterRepository.findById(counterUpdateStatusDTO.id)
 
         if (counter.isEmpty) {
@@ -105,6 +111,48 @@ class CounterServiceImpl(
         counterRepository.save(savedEntity)
 
         return counterMapper.toDomain(savedEntity)
+    }
+
+    @Transactional
+    override fun counterDoNextCustomer(id: String) {
+        var counter = counterRepository.findById(id).orElseThrow{Exception("Counter with id $id does not exist.")}
+
+
+//        used safe call operator to prevent exceptions since currentCustomer is a nullable value
+//        setting the currentCustomer's status to 3 so that they would not be waiting in line anymore
+//        and will not be retrieved by the queueUsersList function
+        counter.currentCustomer?.status = 3
+
+//        setting of the benchmark datetime to 12am of the current day to be the reference for the narrowing down
+//        of queueUsers in the database so that only the customers of current day are shown
+        val time12AM = "00:00:00"
+        val currentDate = LocalDate.now().toString()
+        val currentDateTime12AM = currentDate + "T" + time12AM
+        val ldt = LocalDateTime.parse(currentDateTime12AM)
+//        conversion of LocalDateTime to Instant
+        val instant = ldt.atZone(ZoneId.systemDefault()).toInstant()
+        val status = 1
+
+//        sql query that retrieves queueUsers that have status = 1 (waiting) after createdAt = "the benchmark datetime"
+//        in ascending order according to ticket number
+        var queueUsersList = queueUserRepository.findByStatusAndCreatedAtAfterOrderByTicketNumAsc(status, instant)
+
+//        exception if there are no customers yet/anymore
+        if(queueUsersList.count() == 0) {
+            throw Exception("There are no customers in line.")
+        }
+//        conversion of all elements of the list to their respective ticketNum only
+        var queueUsersListTicketNumbers = queueUsersList.map {it.ticketNum}
+
+//        setting of currentCustomer being entertained by counter
+        var currentCustomer = queueUsersList[0]
+
+        counter.currentCustomer = currentCustomer
+
+        println(queueUsersList)
+        println(queueUsersListTicketNumbers)
+        println("Current Customer: " + currentCustomer.ticketNum)
+
     }
 }
 

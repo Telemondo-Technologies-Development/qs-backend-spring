@@ -10,6 +10,7 @@ data class CounterDTO(
     val name: String,
 //    -1 = inactive, 1 = receiving, 2 = entertaining, 3 = pause
     val status: Int = -1,
+    var currentCustomer: QueueUserDTO?,
     val counterType: CounterTypeDTO,
     val createdAt: Instant,
     val updatedAt: Instant

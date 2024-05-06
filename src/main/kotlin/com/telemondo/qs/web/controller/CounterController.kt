@@ -3,6 +3,7 @@ package com.telemondo.qs.web.controller
 import com.telemondo.qs.dto.CounterCreateDTO
 import com.telemondo.qs.dto.CounterDTO
 import com.telemondo.qs.dto.CounterUpdateStatusDTO
+import com.telemondo.qs.entity.QueueUser
 import com.telemondo.qs.service.CounterService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -40,6 +41,11 @@ class CounterController(
     @PutMapping("/changeStatus")
     fun updateCounterStatus(@RequestBody counterUpdateStatusDTO: CounterUpdateStatusDTO): ResponseEntity<CounterDTO>{
         return ResponseEntity.ok(counterService.updateStatus((counterUpdateStatusDTO)))
+    }
+
+    @PutMapping("/nextCustomer/{id}")
+    fun nextCustomer(@PathVariable id: String): ResponseEntity<Unit>{
+        return ResponseEntity.ok(counterService.counterDoNextCustomer(id))
     }
 
     @DeleteMapping("/{id}")

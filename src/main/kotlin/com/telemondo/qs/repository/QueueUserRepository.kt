@@ -11,4 +11,6 @@ interface QueueUserRepository: CrudRepository<QueueUser, String> {
 
     fun countByCreatedAtAfter(dateTime: Instant): String
 
+    fun findByStatusAndCreatedAtAfterOrderByTicketNumAsc(status: Int, createdAt: Instant): List<QueueUser>
+
 }
