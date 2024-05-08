@@ -38,14 +38,24 @@ class CounterController(
         return ResponseEntity.ok(counterService.updateCounter(counterDTO))
     }
 
-    @PutMapping("/changeStatus")
-    fun updateCounterStatus(@RequestBody counterUpdateStatusDTO: CounterUpdateStatusDTO): ResponseEntity<CounterDTO>{
-        return ResponseEntity.ok(counterService.updateStatus((counterUpdateStatusDTO)))
-    }
+//    @PutMapping("/changeStatus")
+//    fun updateCounterStatus(@RequestBody counterUpdateStatusDTO: CounterUpdateStatusDTO): ResponseEntity<CounterDTO>{
+//        return ResponseEntity.ok(counterService.updateStatus((counterUpdateStatusDTO)))
+//    }
 
     @PutMapping("/nextCustomer/{id}")
     fun nextCustomer(@PathVariable id: String): ResponseEntity<Unit>{
         return ResponseEntity.ok(counterService.counterDoNextCustomer(id))
+    }
+
+    @PutMapping("/pauseCounter/{id}")
+    fun pauseCounter(@PathVariable id: String): ResponseEntity<Unit>{
+        return ResponseEntity.ok(counterService.pauseCounter(id))
+    }
+
+    @PutMapping("/turnOffCounter/{id}")
+    fun turnOffCounter(@PathVariable id: String): ResponseEntity<Unit>{
+        return ResponseEntity.ok(counterService.turnOffCounter(id))
     }
 
     @DeleteMapping("/{id}")

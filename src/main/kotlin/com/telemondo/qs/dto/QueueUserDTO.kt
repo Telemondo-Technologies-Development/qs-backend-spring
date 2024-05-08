@@ -9,7 +9,11 @@ data class QueueUserDTO(
     var id: String,
     var ticketNum: String,
     val counterType: CounterTypeDTO,
-    val counter: CounterDTO?,
+//    used a CounterForQueueUserDTO for QueueUserDTO to prevent infinite recursion because
+//    if Counter would be QueueUser's counter property, it will have the currentCustomer property
+//    which would require QueueUser object again with its counter property which will have another c
+//    currentCustomer property again and so on
+    val counter: CounterForQueueUserDTO?,
 //    -1 = cancelled, 1 = waiting, 2 = on-counter, 3 = complete
     val status: Int = 1,
     val createdAt: Instant,

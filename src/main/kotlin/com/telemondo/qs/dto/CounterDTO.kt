@@ -29,3 +29,10 @@ data class CounterUpdateStatusDTO(
     val status: Int,
     val updatedAt: Instant
 )
+
+data class CounterForQueueUserDTO(
+    val id: String,
+    val name: String,
+    val counterType: CounterTypeDTO,
+    val createdAt: Instant
+)

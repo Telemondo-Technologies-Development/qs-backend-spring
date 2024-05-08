@@ -63,13 +63,11 @@ class CounterServiceImpl(
             throw Exception("Counter with ID ${counterDTO.id} does not exist.")
         }
 
-        counterRepository.save(counterMapper.toEntity(counterDTO))
+        val counterEntity = counterMapper.mapUpdateToEntity(counterDTO, counter.get())
 
-//        much safer update function kay mas connected siya sa Mapstruct
-//        in the "req" parameter which can be "CounterCreateDTO" or any DTO with missing properties, you can still map them to an EXISTING entity w/ full properties
-//        fun mapUpdateToEntity(req: CounterDTO, @MappingTarget counter: Counter): Counter
+        counterRepository.save(counterEntity)
 
-        return counterMapper.toDomain(counter.get())
+        return counterMapper.toDomain(counterEntity)
     }
 
     @Transactional
@@ -83,45 +81,18 @@ class CounterServiceImpl(
         counterRepository.deleteById(id)
     }
 
-//    alternative way to update
-//    @Transactional
-//    override fun updateStatus(id: String, status: Int): CounterDTO {
-//
-//        val counter = counterRepository.findById(id).orElseThrow{(Exception("Counter with ID $id does not exist."))}
-//
-//        counter.status = status
-//
-//        counterRepository.save(counter)
-//
-//        return counterMapper.toDomain(counter)
-//    }
-
-    @Transactional
-    override fun updateStatus(counterUpdateStatusDTO: CounterUpdateStatusDTO): CounterDTO {
-
-        var counter = counterRepository.findById(counterUpdateStatusDTO.id)
-
-        if (counter.isEmpty) {
-            throw Exception("Counter with ID ${counterUpdateStatusDTO.id} does not exist.")
-        }
-
-        var savedEntity = counterMapper.mapUpdateStatusToEntity(counterUpdateStatusDTO, counter.get())
-
-
-        counterRepository.save(savedEntity)
-
-        return counterMapper.toDomain(savedEntity)
-    }
-
     @Transactional
     override fun counterDoNextCustomer(id: String) {
         var counter = counterRepository.findById(id).orElseThrow{Exception("Counter with id $id does not exist.")}
-
 
 //        used safe call operator to prevent exceptions since currentCustomer is a nullable value
 //        setting the currentCustomer's status to 3 so that they would not be waiting in line anymore
 //        and will not be retrieved by the queueUsersList function
         counter.currentCustomer?.status = 3
+
+//        change the status of the counter to a receiving status after completing a customer
+        counter.status = 1
+
 
 //        setting of the benchmark datetime to 12am of the current day to be the reference for the narrowing down
 //        of queueUsers in the database so that only the customers of current day are shown
@@ -135,24 +106,76 @@ class CounterServiceImpl(
 
 //        sql query that retrieves queueUsers that have status = 1 (waiting) after createdAt = "the benchmark datetime"
 //        in ascending order according to ticket number
-        var queueUsersList = queueUserRepository.findByStatusAndCreatedAtAfterOrderByTicketNumAsc(status, instant)
+        val queueUsersList = queueUserRepository.findByStatusAndCreatedAtAfterOrderByTicketNumAsc(status, instant)
 
 //        exception if there are no customers yet/anymore
         if(queueUsersList.count() == 0) {
+//            let the status stay at receiving if there are no more next in line
+//            counter.status = 1
+            println("There are no more customers in line.")
+            println("counter status: " + counter.status)
             throw Exception("There are no customers in line.")
         }
 //        conversion of all elements of the list to their respective ticketNum only
-        var queueUsersListTicketNumbers = queueUsersList.map {it.ticketNum}
+        val queueUsersListTicketNumbers = queueUsersList.map {it.ticketNum}
 
 //        setting of currentCustomer being entertained by counter
-        var currentCustomer = queueUsersList[0]
+        val currentCustomer = queueUsersList[0]
 
         counter.currentCustomer = currentCustomer
+
+//        populate counter property of current customer
+        currentCustomer.counter = counter
+//        change the status into entertaining
+        counter.status = 2
 
         println(queueUsersList)
         println(queueUsersListTicketNumbers)
         println("Current Customer: " + currentCustomer.ticketNum)
+        println("counter status: " + counter.status)
 
     }
+
+    @Transactional
+    override fun pauseCounter(id: String) {
+        val counter = counterRepository.findById(id).orElseThrow{Exception("Counter with id $id does not exist.")}
+        counter.status = 3
+    }
+
+    @Transactional
+    override fun turnOffCounter(id: String) {
+        val counter = counterRepository.findById(id).orElseThrow{Exception("Counter with id $id does not exist.")}
+        counter.status = -1
+    }
+
+    //    alternative way to update
+//    @Transactional
+//    override fun updateStatus(id: String, status: Int): CounterDTO {
+//
+//        val counter = counterRepository.findById(id).orElseThrow{(Exception("Counter with ID $id does not exist."))}
+//
+//        counter.status = status
+//
+//        counterRepository.save(counter)
+//
+//        return counterMapper.toDomain(counter)
+//    }
+
+//    @Transactional
+//    override fun updateStatus(counterUpdateStatusDTO: CounterUpdateStatusDTO): CounterDTO {
+//
+//        var counter = counterRepository.findById(counterUpdateStatusDTO.id)
+//
+//        if (counter.isEmpty) {
+//            throw Exception("Counter with ID ${counterUpdateStatusDTO.id} does not exist.")
+//        }
+//
+//        var savedEntity = counterMapper.mapUpdateStatusToEntity(counterUpdateStatusDTO, counter.get())
+//
+//
+//        counterRepository.save(savedEntity)
+//
+//        return counterMapper.toDomain(savedEntity)
+//    }
 }
 

@@ -16,7 +16,11 @@ interface CounterService {
 
     fun delCounter(id: String)
 
-    fun updateStatus(counterUpdateStatusDTO: CounterUpdateStatusDTO): CounterDTO
+//    fun updateStatus(counterUpdateStatusDTO: CounterUpdateStatusDTO): CounterDTO
 
     fun counterDoNextCustomer(id:String)
+
+    fun pauseCounter(id: String)
+
+    fun turnOffCounter(id: String)
 }
