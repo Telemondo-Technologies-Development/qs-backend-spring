@@ -27,7 +27,7 @@ open class Counter {
 
     @ManyToOne
     @JoinColumn(name = "counter_type_id")
-    open var counterType: CounterType? = null
+    open lateinit var counterType: CounterType
 
     @CreationTimestamp
     open lateinit var createdAt: Instant

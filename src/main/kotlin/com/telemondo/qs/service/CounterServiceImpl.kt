@@ -82,17 +82,21 @@ class CounterServiceImpl(
     }
 
     @Transactional
-    override fun counterDoNextCustomer(id: String) {
-        var counter = counterRepository.findById(id).orElseThrow{Exception("Counter with id $id does not exist.")}
+    override fun counterDoNextCustomer(id: String, customerType: Int) {
+        val counter = counterRepository.findById(id).orElseThrow{Exception("Counter with id $id does not exist.")}
 
 //        used safe call operator to prevent exceptions since currentCustomer is a nullable value
 //        setting the currentCustomer's status to 3 so that they would not be waiting in line anymore
 //        and will not be retrieved by the queueUsersList function
         counter.currentCustomer?.status = 3
 
+//        remove the currentCustomer value from counterDTO to make sure it's not falsely populated
+//        during the waiting time when there's no more people in line, preventing foreign key constraints
+//        in case of deleting queueUsers who happen to be falsely linked to a counter that hasn't cleared him/her yet
+        counter.currentCustomer = null
+
 //        change the status of the counter to a receiving status after completing a customer
         counter.status = 1
-
 
 //        setting of the benchmark datetime to 12am of the current day to be the reference for the narrowing down
 //        of queueUsers in the database so that only the customers of current day are shown
@@ -104,9 +108,9 @@ class CounterServiceImpl(
         val instant = ldt.atZone(ZoneId.systemDefault()).toInstant()
         val status = 1
 
-//        sql query that retrieves queueUsers that have status = 1 (waiting) after createdAt = "the benchmark datetime"
+//        sql query that retrieves queueUsers that have status = 1 (waiting) after createdAt = "the benchmark datetime" with dynamic counterType and customerType filters
 //        in ascending order according to ticket number
-        val queueUsersList = queueUserRepository.findByStatusAndCreatedAtAfterOrderByTicketNumAsc(status, instant)
+        val queueUsersList = queueUserRepository.findByCounterTypeIdAndCustomerTypeAndStatusAndCreatedAtAfterOrderByTicketNumAsc(counter.counterType.id, customerType, status, instant)
 
 //        exception if there are no customers yet/anymore
         if(queueUsersList.count() == 0) {
@@ -126,6 +130,7 @@ class CounterServiceImpl(
 
 //        populate counter property of current customer
         currentCustomer.counter = counter
+
 //        change the status into entertaining
         counter.status = 2
 

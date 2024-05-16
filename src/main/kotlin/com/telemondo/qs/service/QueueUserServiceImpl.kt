@@ -56,7 +56,7 @@ class QueueUserServiceImpl(
 
         val counterType = counterTypeRepository.findById(queueUserCreateDTO.counterTypeId).orElseThrow{Exception("Counter type with id ${queueUserCreateDTO.counterTypeId} does not exist.")}
 
-        val ticketNum = generateTicketNum()
+        val ticketNum = generateTicketNum(queueUserCreateDTO)
 
         queueUser.counterType = counterType
 
@@ -116,17 +116,31 @@ class QueueUserServiceImpl(
 
 
     @Transactional
-    override fun generateTicketNum(): String {
+    override fun generateTicketNum(queueUserCreateDTO: QueueUserCreateDTO): String {
+
+        var suffix = ""
+//        prefix for the ticketNumber according to counterType
+        val prefix = counterTypeRepository.findById(queueUserCreateDTO.counterTypeId).get().prefix.toString()
+
+//        how to make suffix dynamic to other customerTypes that potential client might have
+//        this if statement is just hardcoding suffixes that is tailor-fit for our use-case
+        val customerType = queueUserCreateDTO.customerType
+
+        if(customerType != 1) {
+            suffix = "S"
+        }
+
         val time12AM = "00:00:00"
         val currentDate = LocalDate.now().toString()
         val currentDateTime12AM = currentDate + "T" + time12AM
         val ldt = LocalDateTime.parse(currentDateTime12AM)
         val instant = ldt.atZone(ZoneId.systemDefault()).toInstant()
 
-        var count = queueUserRepository.countByCreatedAtAfter(instant).toInt()
+//        SQL query to return the count of all records after current instant date with dynamic countertype and customertype filter
+        var count = queueUserRepository.countByCounterTypeIdAndCustomerTypeAndCreatedAtAfter(queueUserCreateDTO.counterTypeId, customerType, instant).toInt()
 
         count += 1
         
-        return "T-" + count.toString().padStart(3, '0')
+        return prefix + "-" + count.toString().padStart(3, '0') + suffix
     }
 }

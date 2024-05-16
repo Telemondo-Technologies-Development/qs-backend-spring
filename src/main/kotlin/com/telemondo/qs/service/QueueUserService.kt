@@ -22,6 +22,6 @@ interface QueueUserService {
 
     fun deleteQueueUser(id: String)
 
-    fun generateTicketNum(): String
+    fun generateTicketNum(queueUserCreateDTO: QueueUserCreateDTO): String
 
 }

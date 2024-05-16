@@ -43,9 +43,14 @@ class CounterController(
 //        return ResponseEntity.ok(counterService.updateStatus((counterUpdateStatusDTO)))
 //    }
 
-    @PutMapping("/nextCustomer/{id}")
-    fun nextCustomer(@PathVariable id: String): ResponseEntity<Unit>{
-        return ResponseEntity.ok(counterService.counterDoNextCustomer(id))
+    data class nextCustomerRequest(
+        val id: String,
+        val customerType: Int
+            )
+
+    @PutMapping("/nextCustomer")
+    fun nextCustomer(@RequestBody nextCustomerRequest: nextCustomerRequest): ResponseEntity<Unit>{
+        return ResponseEntity.ok(counterService.counterDoNextCustomer(nextCustomerRequest.id, nextCustomerRequest.customerType))
     }
 
     @PutMapping("/pauseCounter/{id}")

@@ -13,6 +13,8 @@ open class CounterType{
     @GeneratedValue(strategy = GenerationType.UUID)
     open lateinit var id: String
     open lateinit var counterName: String
+    @Column(unique = true)
+    open lateinit var prefix : String
 
     @CreationTimestamp
     open lateinit var createdAt: Instant

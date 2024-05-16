@@ -9,8 +9,10 @@ import java.time.LocalDateTime
 @Repository
 interface QueueUserRepository: CrudRepository<QueueUser, String> {
 
-    fun countByCreatedAtAfter(dateTime: Instant): String
+//    fun countByCreatedAtAfter(dateTime: Instant): String
 
-    fun findByStatusAndCreatedAtAfterOrderByTicketNumAsc(status: Int, createdAt: Instant): List<QueueUser>
+    fun countByCounterTypeIdAndCustomerTypeAndCreatedAtAfter(counterTypeId: String, customerType: Int, createdAt: Instant): String
+
+    fun findByCounterTypeIdAndCustomerTypeAndStatusAndCreatedAtAfterOrderByTicketNumAsc(counterTypeId: String, customerType: Int, status: Int, createdAt: Instant): List<QueueUser>
 
 }

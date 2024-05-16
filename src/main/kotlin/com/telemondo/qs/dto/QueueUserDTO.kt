@@ -8,6 +8,8 @@ import java.time.Instant
 data class QueueUserDTO(
     var id: String,
     var ticketNum: String,
+//    1 = regular, 2 = non-regular
+    val customerType: Int,
     val counterType: CounterTypeDTO,
 //    used a CounterForQueueUserDTO for QueueUserDTO to prevent infinite recursion because
 //    if Counter would be QueueUser's counter property, it will have the currentCustomer property
@@ -21,6 +23,7 @@ data class QueueUserDTO(
 )
 
 data class QueueUserCreateDTO(
+    val customerType: Int,
     val counterTypeId: String,
     val counterId : String?,
 //    val counter: CounterDTO?,
