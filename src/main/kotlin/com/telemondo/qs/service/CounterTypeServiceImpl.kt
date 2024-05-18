@@ -29,6 +29,18 @@ class CounterTypeServiceImpl(
     }
 
     @Transactional
+    override fun getCounterType(id: String): CounterTypeDTO{
+
+        val counterType = counterTypeRepository.findById(id)
+
+        if(counterType.isEmpty){
+            throw Exception("Counter type with id $id does not exist.")
+        }
+
+        return counterTypeMapper.toDomain(counterType.get())
+    }
+
+    @Transactional
     override fun createCounterType(counterTypeCreateDTO: CounterTypeCreateDTO): CounterTypeDTO {
 
         val counterType = counterTypeMapper.mapCreateToEntity(counterTypeCreateDTO)

@@ -28,6 +28,11 @@ class CounterTypeControllers(
         return ResponseEntity.ok(counterTypeService.getCounterTypes())
     }
 
+    @GetMapping("/{id}")
+    fun getCounterType(@PathVariable id: String): ResponseEntity<CounterTypeDTO>{
+        return ResponseEntity.ok(counterTypeService.getCounterType(id))
+    }
+
     @PostMapping
     fun createCounterType(@RequestBody counterTypeCreateDTO: CounterTypeCreateDTO): ResponseEntity<CounterTypeDTO> {
         return ResponseEntity.ok(counterTypeService.createCounterType(counterTypeCreateDTO))
@@ -38,7 +43,7 @@ class CounterTypeControllers(
         return ResponseEntity.ok(counterTypeService.updateCounterType(counterTypeDTO))
     }
 
-    @DeleteMapping
+    @DeleteMapping("/{id}")
     fun delCounterType(@PathVariable id: String): ResponseEntity<Unit> {
         return ResponseEntity(counterTypeService.delCounterType(id), HttpStatus.NO_CONTENT)
     }

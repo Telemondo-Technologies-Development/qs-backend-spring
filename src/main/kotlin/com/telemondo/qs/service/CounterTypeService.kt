@@ -1,5 +1,6 @@
 package com.telemondo.qs.service
 
+import com.telemondo.qs.dto.CounterDTO
 import com.telemondo.qs.dto.CounterTypeCreateDTO
 import com.telemondo.qs.dto.CounterTypeDTO
 import org.springframework.stereotype.Service
@@ -8,6 +9,8 @@ import org.springframework.stereotype.Service
 interface CounterTypeService {
 
     fun getCounterTypes(): List<CounterTypeDTO>
+
+    fun getCounterType(id: String): CounterTypeDTO
 
     fun createCounterType(counterTypeCreateDTO: CounterTypeCreateDTO): CounterTypeDTO
 

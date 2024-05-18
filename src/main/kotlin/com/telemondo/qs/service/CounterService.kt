@@ -10,6 +10,8 @@ interface CounterService {
 
     fun getCounters(): List<CounterDTO>
 
+    fun getCounter(id: String): CounterDTO
+
     fun createCounter(counterCreateDTO: CounterCreateDTO): CounterDTO
 
     fun updateCounter(counterDTO: CounterDTO): CounterDTO

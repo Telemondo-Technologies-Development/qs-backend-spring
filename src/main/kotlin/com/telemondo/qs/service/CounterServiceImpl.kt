@@ -39,6 +39,17 @@ class CounterServiceImpl(
         }
     }
 
+    @Transactional
+    override fun getCounter(id: String): CounterDTO {
+        val counter = counterRepository.findById(id)
+
+        if(counter.isEmpty){
+            throw Exception("Counter with id $id does not exist.")
+        }
+
+        return counterMapper.toDomain(counter.get())
+    }
+
     //    we made counterCreateDTO WITHOUT id because counterDTO has id required.
     @Transactional
     override fun createCounter(counterCreateDTO: CounterCreateDTO): CounterDTO {

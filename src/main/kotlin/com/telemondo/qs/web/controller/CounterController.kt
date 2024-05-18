@@ -27,7 +27,11 @@ class CounterController(
         return ResponseEntity.ok(counterService.getCounters())
     }
 
-//    NEED COUNTERTYPE SERVICES*********************************************************
+    @GetMapping("/{id}")
+    fun getCounter(@PathVariable id:String): ResponseEntity<CounterDTO>{
+        return ResponseEntity.ok(counterService.getCounter(id))
+    }
+
     @PostMapping
     fun createCounter(@RequestBody counterCreateDTO: CounterCreateDTO): ResponseEntity<CounterDTO>{
         return ResponseEntity.ok(counterService.createCounter(counterCreateDTO))
