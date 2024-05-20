@@ -8,12 +8,14 @@ import com.telemondo.qs.repository.QueueUserRepository
 import com.telemondo.qs.utils.mapper.QueueUserMapper
 import jakarta.transaction.Transactional
 import org.mapstruct.factory.Mappers
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
-import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
-import java.time.ZoneOffset
+
 
 @Service
 class QueueUserServiceImpl(
@@ -24,48 +26,36 @@ class QueueUserServiceImpl(
 
 
     @Transactional
-    override fun getQueueUsers(): List<QueueUserDTO> {
-        val queueUsers = queueUserRepository.findAll()
-
+    override fun getQueueUsers(startingPage: Int, pageSize: Int): List<QueueUserDTO> {
+//        create a pageable object to pass to the findAll function
+        val pageable: Pageable = PageRequest.of(startingPage, pageSize, Sort.by(Sort.Direction.DESC, "createdAt"))
+        val queueUsers = queueUserRepository.findAll(pageable)
         if(queueUsers.count() == 0){
             throw Exception("There are no queue users yet.")
         }
-
-        return queueUsers.map{
+        return queueUsers.content.map{
             queueUserMapper.toDomain(it)
         }
-
     }
 
     @Transactional
     override fun getQueueUser(id: String): QueueUserDTO{
         val queueUser = queueUserRepository.findById(id)
-
         if(queueUser.isEmpty){
             throw Exception("Queue user with id $id does not exist.")
         }
-
         return queueUserMapper.toDomain(queueUser.get())
-
     }
 
     @Transactional
     override fun createQueueUser(queueUserCreateDTO: QueueUserCreateDTO): QueueUserDTO {
-
         val queueUser = queueUserMapper.mapCreateToEntity(queueUserCreateDTO)
-
         val counterType = counterTypeRepository.findById(queueUserCreateDTO.counterTypeId).orElseThrow{Exception("Counter type with id ${queueUserCreateDTO.counterTypeId} does not exist.")}
-
         val ticketNum = generateTicketNum(queueUserCreateDTO)
-
         queueUser.counterType = counterType
-
         queueUser.ticketNum = ticketNum
-
         queueUserRepository.save(queueUser)
-
         val queueUserDomain = queueUserMapper.toDomain(queueUser)
-
         return queueUserDomain
     }
 

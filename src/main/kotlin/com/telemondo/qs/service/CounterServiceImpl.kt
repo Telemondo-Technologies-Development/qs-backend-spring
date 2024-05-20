@@ -9,8 +9,13 @@ import com.telemondo.qs.repository.CounterTypeRepository
 import com.telemondo.qs.repository.QueueUserRepository
 import com.telemondo.qs.utils.mapper.CounterMapper
 import jakarta.transaction.Transactional
+import jakarta.validation.constraints.Size
 import org.mapstruct.MappingTarget
 import org.mapstruct.factory.Mappers
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import java.time.LocalDate
@@ -26,15 +31,14 @@ class CounterServiceImpl(
 ): CounterService {
 
     @Transactional
-    override fun getCounters(): List<CounterDTO> {
-
-        val counters = counterRepository.findAll()
-
+    override fun getCounters(startingPage: Int, pageSize: Int): List<CounterDTO> {
+        val pageable: Pageable = PageRequest.of(startingPage, pageSize, Sort.by(Sort.Direction.ASC, "name"))
+        val counters = counterRepository.findAll(pageable)
         if (counters.count() == 0) {
             throw Exception("No counters yet.")
         }
 
-        return counters.map {
+        return counters.content.map {
             counterMapper.toDomain(it)
         }
     }

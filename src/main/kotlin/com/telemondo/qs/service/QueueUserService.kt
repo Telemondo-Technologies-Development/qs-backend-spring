@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service
 @Service
 interface QueueUserService {
 
-    fun getQueueUsers(): List<QueueUserDTO>
+    fun getQueueUsers(startingPage: Int, pageSize: Int): List<QueueUserDTO>
 
     fun getQueueUser(id: String): QueueUserDTO
 

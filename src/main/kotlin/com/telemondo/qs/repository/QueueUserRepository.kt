@@ -1,15 +1,15 @@
 package com.telemondo.qs.repository
 
 import com.telemondo.qs.entity.QueueUser
-import org.springframework.data.repository.CrudRepository
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Pageable
+import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 import java.time.Instant
-import java.time.LocalDateTime
+
 
 @Repository
-interface QueueUserRepository: CrudRepository<QueueUser, String> {
-
-//    fun countByCreatedAtAfter(dateTime: Instant): String
+interface QueueUserRepository: JpaRepository<QueueUser, String> {
 
     fun countByCounterTypeIdAndCustomerTypeAndCreatedAtAfter(counterTypeId: String, customerType: Int, createdAt: Instant): String
 

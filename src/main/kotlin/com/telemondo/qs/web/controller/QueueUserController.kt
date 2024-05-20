@@ -20,10 +20,14 @@ import org.springframework.web.bind.annotation.RestController
 class QueueUserController(
     private val queueUserService: QueueUserService
 ) {
+    data class pageableObject (
+        val startingPage: Int,
+        val pageSize: Int
+    )
 
     @GetMapping
-    fun getQueueUsers(): ResponseEntity<List<QueueUserDTO>>{
-        return ResponseEntity.ok(queueUserService.getQueueUsers())
+    fun getQueueUsers(@RequestBody pageableObject: pageableObject): ResponseEntity<List<QueueUserDTO>>{
+        return ResponseEntity.ok(queueUserService.getQueueUsers(pageableObject.startingPage, pageableObject.pageSize))
     }
 
     @GetMapping("/{id}")

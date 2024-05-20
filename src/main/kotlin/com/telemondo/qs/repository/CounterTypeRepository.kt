@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository
 
 
 @Repository
-interface CounterTypeRepository: CrudRepository<CounterType, String>{
+interface CounterTypeRepository: JpaRepository<CounterType, String>{
 
 
 

@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service
 @Service
 interface CounterService {
 
-    fun getCounters(): List<CounterDTO>
+    fun getCounters(startingPage: Int, pageSize: Int): List<CounterDTO>
 
     fun getCounter(id: String): CounterDTO
 

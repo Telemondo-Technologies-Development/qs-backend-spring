@@ -6,7 +6,10 @@ import com.telemondo.qs.repository.CounterTypeRepository
 import com.telemondo.qs.utils.mapper.CounterTypeMapper
 import jakarta.transaction.Transactional
 import org.mapstruct.factory.Mappers
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
+import org.springframework.data.domain.Pageable
 
 @Service
 class CounterTypeServiceImpl(
@@ -15,15 +18,14 @@ class CounterTypeServiceImpl(
 ) : CounterTypeService {
 
     @Transactional
-    override fun getCounterTypes(): List<CounterTypeDTO> {
-
-        val countertypes = counterTypeRepository.findAll()
-
+    override fun getCounterTypes(startingPage: Int, pageSize: Int): List<CounterTypeDTO> {
+        val pageable: Pageable = PageRequest.of(startingPage, pageSize, Sort.by(Sort.Direction.ASC, "counterName"))
+        val countertypes = counterTypeRepository.findAll(pageable)
         if(countertypes.count() == 0){
             throw Exception("No counter types yet.")
         }
 
-        return countertypes.map{
+        return countertypes.content.map{
             counterTypeMapper.toDomain(it)
         }
     }

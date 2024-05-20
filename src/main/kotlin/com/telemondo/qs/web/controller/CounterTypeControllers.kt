@@ -23,9 +23,15 @@ import org.springframework.web.bind.annotation.RestController
 class CounterTypeControllers(
     private val counterTypeService: CounterTypeService
 ) {
+
+    data class pageableObject (
+        val startingPage: Int,
+        val pageSize: Int
+    )
+
     @GetMapping
-    fun getCounterTypes(): ResponseEntity<List<CounterTypeDTO>> {
-        return ResponseEntity.ok(counterTypeService.getCounterTypes())
+    fun getCounterTypes(@RequestBody pageableObject: pageableObject): ResponseEntity<List<CounterTypeDTO>> {
+        return ResponseEntity.ok(counterTypeService.getCounterTypes(pageableObject.startingPage, pageableObject.pageSize))
     }
 
     @GetMapping("/{id}")

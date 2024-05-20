@@ -22,9 +22,14 @@ class CounterController(
     private val counterService: CounterService
 ) {
 
+    data class pageableObject (
+        val startingPage: Int,
+        val pageSize: Int
+    )
+
     @GetMapping
-    fun getCounters(): ResponseEntity<List<CounterDTO>>{
-        return ResponseEntity.ok(counterService.getCounters())
+    fun getCounters(@RequestBody pageableObject: pageableObject): ResponseEntity<List<CounterDTO>>{
+        return ResponseEntity.ok(counterService.getCounters(pageableObject.startingPage, pageableObject.pageSize))
     }
 
     @GetMapping("/{id}")
