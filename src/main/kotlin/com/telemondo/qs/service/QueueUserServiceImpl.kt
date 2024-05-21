@@ -6,6 +6,7 @@ import com.telemondo.qs.dto.QueueUserUpdateStatusDTO
 import com.telemondo.qs.repository.CounterTypeRepository
 import com.telemondo.qs.repository.QueueUserRepository
 import com.telemondo.qs.utils.mapper.QueueUserMapper
+import io.nats.client.Connection
 import jakarta.transaction.Transactional
 import org.mapstruct.factory.Mappers
 import org.springframework.data.domain.PageRequest
@@ -21,7 +22,8 @@ import java.time.ZoneId
 class QueueUserServiceImpl(
     private val queueUserRepository: QueueUserRepository,
     private val queueUserMapper: QueueUserMapper = Mappers.getMapper(QueueUserMapper::class.java),
-    private val counterTypeRepository: CounterTypeRepository
+    private val counterTypeRepository: CounterTypeRepository,
+    private val natsConnection: Connection
 ) : QueueUserService {
 
 
@@ -47,6 +49,7 @@ class QueueUserServiceImpl(
         return queueUserMapper.toDomain(queueUser.get())
     }
 
+
     @Transactional
     override fun createQueueUser(queueUserCreateDTO: QueueUserCreateDTO): QueueUserDTO {
         val queueUser = queueUserMapper.mapCreateToEntity(queueUserCreateDTO)
@@ -55,6 +58,23 @@ class QueueUserServiceImpl(
         queueUser.counterType = counterType
         queueUser.ticketNum = ticketNum
         queueUserRepository.save(queueUser)
+//        sends a notification to frontend that queueUser was created
+        val message = "Queue user created: ${queueUser.ticketNum}"
+        natsConnection.publish("queue-user-created", message.toByteArray())
+////        for frontend
+//        // Example using NATS.js library for Node.js
+//        const { connect } = require('nats');
+//
+//        connect({ servers: 'nats://localhost:4222' }).then((nc) => {
+//            const opts = nc.subscriptionOptions();
+//            opts.setManualAckMode(true);
+//
+//            const sub = nc.subscribe('queue-user-created', opts);
+//            sub.on('message', (msg) => {
+//                console.log('Received message:', msg.getData());
+//                // Process the received message, e.g., update UI
+//            });
+//        });
         val queueUserDomain = queueUserMapper.toDomain(queueUser)
         return queueUserDomain
     }
