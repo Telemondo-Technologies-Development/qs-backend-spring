@@ -24,14 +24,11 @@ open class Counter {
     open var currentCustomer: QueueUser? = null
     open lateinit var name: String
     open var status: Int = -1
-
     @ManyToOne
     @JoinColumn(name = "counter_type_id")
     open lateinit var counterType: CounterType
-
     @CreationTimestamp
-    open lateinit var createdAt: Instant
-
+    open var createdAt: Instant = Instant.now()
     @UpdateTimestamp
-    open lateinit var updatedAt: Instant
+    open var updatedAt: Instant = Instant.now()
 }

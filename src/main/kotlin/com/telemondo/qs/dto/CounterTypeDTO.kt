@@ -12,7 +12,11 @@ data class CounterTypeDTO(
 
 data class CounterTypeCreateDTO(
     val counterName: String,
-    val prefix: String,
-    val createdAt: Instant,
-    val updatedAt: Instant
+    val prefix: String
+)
+
+data class CounterTypeUpdateDTO(
+    val id: String,
+    val counterName: String?,
+    val prefix: String?
 )

@@ -2,8 +2,7 @@ package com.telemondo.qs.web.controller
 
 import com.telemondo.qs.dto.CounterCreateDTO
 import com.telemondo.qs.dto.CounterDTO
-import com.telemondo.qs.dto.CounterUpdateStatusDTO
-import com.telemondo.qs.entity.QueueUser
+import com.telemondo.qs.dto.CounterUpdateDTO
 import com.telemondo.qs.service.CounterService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -15,6 +14,7 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import java.time.Instant
 
 @RestController
 @RequestMapping("/counter")
@@ -22,14 +22,25 @@ class CounterController(
     private val counterService: CounterService
 ) {
 
-    data class pageableObject (
-        val startingPage: Int,
-        val pageSize: Int
+    data class CounterFilter (
+//        currentPage = -1 to go the last page
+        var currentPage: Int,
+//        pageSize = -1 to retrieve ALL records
+        var pageSize: Int,
+        val id: String?,
+        val status: Int?,
+        val name: String?,
+        val currentCustomerId: String?,
+        val counterTypeId: String?,
+        val createdAt: Instant?,
+        val updatedAt: Instant?,
+        val sortField: String?,
+        val sortDirection: String?
     )
 
     @GetMapping
-    fun getCounters(@RequestBody pageableObject: pageableObject): ResponseEntity<List<CounterDTO>>{
-        return ResponseEntity.ok(counterService.getCounters(pageableObject.startingPage, pageableObject.pageSize))
+    fun getCounters(@RequestBody counterFilter: CounterFilter): ResponseEntity<List<CounterDTO>>{
+        return ResponseEntity.ok(counterService.getCounters(counterFilter))
     }
 
     @GetMapping("/{id}")
@@ -43,8 +54,8 @@ class CounterController(
     }
 
     @PutMapping
-    fun updateCounter(@RequestBody counterDTO: CounterDTO): ResponseEntity<CounterDTO>{
-        return ResponseEntity.ok(counterService.updateCounter(counterDTO))
+    fun updateCounter(@RequestBody counterUpdateDTO: CounterUpdateDTO): ResponseEntity<CounterDTO>{
+        return ResponseEntity.ok(counterService.updateCounter(counterUpdateDTO))
     }
 
 //    @PutMapping("/changeStatus")
@@ -52,14 +63,24 @@ class CounterController(
 //        return ResponseEntity.ok(counterService.updateStatus((counterUpdateStatusDTO)))
 //    }
 
-    data class nextCustomerRequest(
-        val id: String,
-        val customerType: Int
-            )
+    @PutMapping("/nextRegularCustomer/{id}")
+    fun nextRegularCustomer(@PathVariable id:String): ResponseEntity<Unit>{
+        return ResponseEntity.ok(counterService.nextRegularCustomer(id))
+    }
 
-    @PutMapping("/nextCustomer")
-    fun nextCustomer(@RequestBody nextCustomerRequest: nextCustomerRequest): ResponseEntity<Unit>{
-        return ResponseEntity.ok(counterService.counterDoNextCustomer(nextCustomerRequest.id, nextCustomerRequest.customerType))
+    @PutMapping("/nextNonRegularCustomer/{id}")
+    fun nextNonRegularCustomer(@PathVariable id:String): ResponseEntity<Unit>{
+        return ResponseEntity.ok(counterService.nextNonRegularCustomer(id))
+    }
+
+    @PutMapping("/noShowCustomer/{id}")
+    fun noShowCounterCustomer(@PathVariable id: String): ResponseEntity<Unit>{
+        return ResponseEntity.ok(counterService.noShowCounterCustomer(id))
+    }
+
+    @PutMapping("/finishCustomer/{id}")
+    fun finishCounterCustomer(@PathVariable id: String): ResponseEntity<Unit>{
+        return ResponseEntity.ok(counterService.finishCounterCustomer(id))
     }
 
     @PutMapping("/pauseCounter/{id}")

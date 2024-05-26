@@ -10,6 +10,6 @@ import org.springframework.context.annotation.Configuration
 class NatsConfig {
     @Bean
     fun natsConnection(): Connection {
-        return Nats.connect("nats://localhost:8080") // Adjust the URL as per your NATS server configuration
+        return Nats.connect("nats://localhost:4222") // Adjust the URL as per your NATS server configuration
     }
 }

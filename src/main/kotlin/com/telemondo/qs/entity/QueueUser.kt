@@ -33,7 +33,7 @@ open class QueueUser{
     @Column
     open var status: Int = 1
     @CreationTimestamp
-    open lateinit var createdAt: Instant
+    open var createdAt: Instant = Instant.now()
     @UpdateTimestamp
-    open lateinit var updatedAt: Instant
+    open var updatedAt: Instant = Instant.now()
 }

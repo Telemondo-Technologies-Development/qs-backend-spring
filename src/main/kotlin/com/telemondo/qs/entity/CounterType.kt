@@ -15,15 +15,8 @@ open class CounterType{
     open lateinit var counterName: String
     @Column(unique = true)
     open lateinit var prefix : String
-
     @CreationTimestamp
-    open lateinit var createdAt: Instant
-
+    open var createdAt: Instant = Instant.now()
     @UpdateTimestamp
-    open lateinit var updatedAt: Instant
+    open var updatedAt: Instant = Instant.now()
 }
-
-/*
-Is the data should like this in the database?
-Unique ID | Counter Name | Created At | Updated At
- */

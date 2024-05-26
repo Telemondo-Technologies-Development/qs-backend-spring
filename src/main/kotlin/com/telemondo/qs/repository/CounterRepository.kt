@@ -7,5 +7,7 @@ import org.springframework.stereotype.Repository
 import java.time.Instant
 
 @Repository
-interface CounterRepository: JpaRepository<Counter, String> {
+interface CounterRepository: JpaRepository<Counter, String>, CounterDynamicFilterRepository {
+
+    fun countByCounterTypeId(counterTypeId: String): String
 }

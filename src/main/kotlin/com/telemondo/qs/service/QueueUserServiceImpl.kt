@@ -2,10 +2,12 @@ package com.telemondo.qs.service
 
 import com.telemondo.qs.dto.QueueUserCreateDTO
 import com.telemondo.qs.dto.QueueUserDTO
+import com.telemondo.qs.dto.QueueUserUpdateDTO
 import com.telemondo.qs.dto.QueueUserUpdateStatusDTO
 import com.telemondo.qs.repository.CounterTypeRepository
 import com.telemondo.qs.repository.QueueUserRepository
 import com.telemondo.qs.utils.mapper.QueueUserMapper
+import com.telemondo.qs.web.controller.QueueUserController.QueueUserFilter
 import io.nats.client.Connection
 import jakarta.transaction.Transactional
 import org.mapstruct.factory.Mappers
@@ -28,14 +30,13 @@ class QueueUserServiceImpl(
 
 
     @Transactional
-    override fun getQueueUsers(startingPage: Int, pageSize: Int): List<QueueUserDTO> {
-//        create a pageable object to pass to the findAll function
-        val pageable: Pageable = PageRequest.of(startingPage, pageSize, Sort.by(Sort.Direction.DESC, "createdAt"))
-        val queueUsers = queueUserRepository.findAll(pageable)
-        if(queueUsers.count() == 0){
-            throw Exception("There are no queue users yet.")
+//    pageSize = -1 is to get ALL the results
+    override fun getQueueUsers(queueUserFilter: QueueUserFilter): List<QueueUserDTO> {
+        val queueUsers = queueUserRepository.findDynamicQueueUsers(queueUserFilter)
+        if (queueUsers.isEmpty()){
+            throw Exception("No Queue Users.")
         }
-        return queueUsers.content.map{
+        return queueUsers.map{
             queueUserMapper.toDomain(it)
         }
     }
@@ -80,15 +81,15 @@ class QueueUserServiceImpl(
     }
 
     @Transactional
-    override fun updateQueueUser(queueUserDTO: QueueUserDTO): QueueUserDTO {
+    override fun updateQueueUser(queueUserUpdateDTO: QueueUserUpdateDTO): QueueUserDTO {
 
-        val queueUser = queueUserRepository.findById(queueUserDTO.id)
+        val queueUser = queueUserRepository.findById(queueUserUpdateDTO.id)
 
         if(queueUser.isEmpty) {
-            throw Exception("Counter with ID ${queueUserDTO.id} does not exist.")
+            throw Exception("Counter with ID ${queueUserUpdateDTO.id} does not exist.")
         }
 
-        val queueUserEntity = queueUserMapper.mapUpdateToEntity(queueUserDTO, queueUser.get())
+        val queueUserEntity = queueUserMapper.mapUpdateToEntity(queueUserUpdateDTO, queueUser.get())
 
         queueUserRepository.save(queueUserEntity)
 

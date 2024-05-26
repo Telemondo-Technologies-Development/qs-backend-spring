@@ -2,21 +2,17 @@ package com.telemondo.qs.service
 
 import com.telemondo.qs.dto.CounterCreateDTO
 import com.telemondo.qs.dto.CounterDTO
-import com.telemondo.qs.dto.CounterUpdateStatusDTO
-import com.telemondo.qs.entity.Counter
+import com.telemondo.qs.dto.CounterUpdateDTO
 import com.telemondo.qs.repository.CounterRepository
 import com.telemondo.qs.repository.CounterTypeRepository
 import com.telemondo.qs.repository.QueueUserRepository
 import com.telemondo.qs.utils.mapper.CounterMapper
+import com.telemondo.qs.web.controller.CounterController.CounterFilter
 import jakarta.transaction.Transactional
-import jakarta.validation.constraints.Size
-import org.mapstruct.MappingTarget
 import org.mapstruct.factory.Mappers
-import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
-import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -31,16 +27,15 @@ class CounterServiceImpl(
 ): CounterService {
 
     @Transactional
-    override fun getCounters(startingPage: Int, pageSize: Int): List<CounterDTO> {
-        val pageable: Pageable = PageRequest.of(startingPage, pageSize, Sort.by(Sort.Direction.ASC, "name"))
-        val counters = counterRepository.findAll(pageable)
+    override fun getCounters(counterFilter: CounterFilter): List<CounterDTO> {
+        val counters = counterRepository.findDynamicCounters(counterFilter)
+        println(counterFilter.pageSize)
         if (counters.count() == 0) {
-            throw Exception("No counters yet.")
-        }
-
-        return counters.content.map {
-            counterMapper.toDomain(it)
-        }
+                throw Exception("No counters yet.")
+            }
+        return counters.map {
+                counterMapper.toDomain(it)
+            }
     }
 
     @Transactional
@@ -64,21 +59,27 @@ class CounterServiceImpl(
 
         counter.counterType = counterType
 
+        val numOfExistingCounters = counterRepository.countByCounterTypeId(counterType.id).toInt() + 1
+
+        val counterName = "${counterType.counterName}-$numOfExistingCounters"
+
+        counter.name = counterName
+
         counterRepository.save(counter)
 
         return counterMapper.toDomain(counter)
     }
 
     @Transactional
-    override fun updateCounter(counterDTO: CounterDTO): CounterDTO {
+    override fun updateCounter(counterUpdateDTO: CounterUpdateDTO): CounterDTO {
 
-        val counter = counterRepository.findById(counterDTO.id)
+        val counter = counterRepository.findById(counterUpdateDTO.id)
 
         if (counter.isEmpty) {
-            throw Exception("Counter with ID ${counterDTO.id} does not exist.")
+            throw Exception("Counter with ID ${counterUpdateDTO.id} does not exist.")
         }
 
-        val counterEntity = counterMapper.mapUpdateToEntity(counterDTO, counter.get())
+        val counterEntity = counterMapper.mapUpdateToEntity(counterUpdateDTO, counter.get())
 
         counterRepository.save(counterEntity)
 
@@ -97,21 +98,12 @@ class CounterServiceImpl(
     }
 
     @Transactional
-    override fun counterDoNextCustomer(id: String, customerType: Int) {
+    override fun counterNextCustomer(id: String, customerType: Int) {
         val counter = counterRepository.findById(id).orElseThrow{Exception("Counter with id $id does not exist.")}
 
-//        used safe call operator to prevent exceptions since currentCustomer is a nullable value
-//        setting the currentCustomer's status to 3 so that they would not be waiting in line anymore
-//        and will not be retrieved by the queueUsersList function
-        counter.currentCustomer?.status = 3
-
-//        remove the currentCustomer value from counterDTO to make sure it's not falsely populated
-//        during the waiting time when there's no more people in line, preventing foreign key constraints
-//        in case of deleting queueUsers who happen to be falsely linked to a counter that hasn't cleared him/her yet
-        counter.currentCustomer = null
-
-//        change the status of the counter to a receiving status after completing a customer
-        counter.status = 1
+        if(counter.currentCustomer?.status == 2 || counter.status != 1){
+            throw Exception("Please mark the current customer as Finished/No-show before calling next customer.")
+        }
 
 //        setting of the benchmark datetime to 12am of the current day to be the reference for the narrowing down
 //        of queueUsers in the database so that only the customers of current day are shown
@@ -145,6 +137,7 @@ class CounterServiceImpl(
 
 //        populate counter property of current customer
         currentCustomer.counter = counter
+        counter.currentCustomer?.status = 2
 
 //        change the status into entertaining
         counter.status = 2
@@ -152,9 +145,56 @@ class CounterServiceImpl(
         println(queueUsersList)
         println(queueUsersListTicketNumbers)
         println("Current Customer: " + currentCustomer.ticketNum)
-        println("counter status: " + counter.status)
+        println("Counter Status: " + counter.status)
 
     }
+
+    @Transactional
+    override fun noShowCounterCustomer(id: String){
+        val counter = counterRepository.findById(id).orElseThrow{Exception("Counter with id $id does not exist.")}
+        if(counter.currentCustomer?.status == null){
+            throw Exception("There is no customer at the counter currently.")
+        }
+//        set the status of the customer to no-show
+//        used safe call operator to prevent exceptions since currentCustomer is a nullable value
+        counter.currentCustomer?.status = -1
+//        change the status of the counter to a receiving status after completing a customer
+        counter.status = 1
+        println("${counter.currentCustomer?.ticketNum} is marked as no-show.")
+//        remove the currentCustomer value from counterDTO to make sure it's not falsely populated
+//        during the waiting time when there's no more people in line, preventing foreign key constraints
+//        in case of deleting queueUsers who happen to be falsely linked to a counter that hasn't cleared him/her yet
+        counter.currentCustomer = null
+    }
+
+    @Transactional
+    override fun finishCounterCustomer(id: String){
+        val counter = counterRepository.findById(id).orElseThrow{Exception("Counter with id $id does not exist.")}
+        if(counter.currentCustomer?.status == null) {
+            throw Exception("There is no customer at the counter currently.")
+        }
+//        set the status of the customer to complete
+//        used safe call operator to prevent exceptions since currentCustomer is a nullable value
+        counter.currentCustomer?.status = 3
+//      change the status of the counter to a receiving status after completing a customer
+        counter.status = 1
+        println("${counter.currentCustomer?.ticketNum} is marked as finished.")
+//        remove the currentCustomer value from counterDTO to make sure it's not falsely populated
+//        during the waiting time when there's no more people in line, preventing foreign key constraints
+//        in case of deleting queueUsers who happen to be falsely linked to a counter that hasn't cleared him/her yet
+        counter.currentCustomer = null
+    }
+
+    @Transactional
+    override fun nextRegularCustomer(id: String) {
+        counterNextCustomer(id, 1)
+    }
+
+    @Transactional
+    override fun nextNonRegularCustomer(id: String) {
+        counterNextCustomer(id, 2)
+    }
+
 
     @Transactional
     override fun pauseCounter(id: String) {
