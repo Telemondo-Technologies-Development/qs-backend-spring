@@ -14,8 +14,10 @@
 CREATE TABLE IF NOT EXISTS counter_types (
     id VARCHAR(36) PRIMARY KEY,
     counter_type VARCHAR(36) NOT NULL,
+    prefix VARCHAR(36) NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+    UNIQUE (prefix)
 );
 
 CREATE TABLE IF NOT EXISTS counters (
@@ -23,15 +25,19 @@ CREATE TABLE IF NOT EXISTS counters (
     name VARCHAR(36) NOT NULL,
     --  -1 = inactive, 1 = receiving, 2 = entertaining, 3 = pause
     status INT DEFAULT -1,
+    current_customer_id VARCHAR(36)
     counter_type_id VARCHAR(36) NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (counter_type_id) REFERENCES counter_types(id)
+    FOREIGN KEY (current_customer_id) REFERENCES queue_users(id)
 );
 
 CREATE TABLE IF NOT EXISTS queue_users (
     id VARCHAR(36) PRIMARY KEY,
     ticket_num VARCHAR(36) NOT NULL,
+--    1 = regular, 2 = non-regular
+    customer_type INT NOT NULL,
     counter_type_id VARCHAR(36) NOT NULL,
     counter_id VARCHAR(36) NOT NULL,
     --  -1 = cancelled, 1 = waiting, 2 = on-counter, 3 = complete

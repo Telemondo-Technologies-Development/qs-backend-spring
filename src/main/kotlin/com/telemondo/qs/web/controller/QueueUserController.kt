@@ -2,6 +2,7 @@ package com.telemondo.qs.web.controller
 
 import com.telemondo.qs.dto.QueueUserCreateDTO
 import com.telemondo.qs.dto.QueueUserDTO
+import com.telemondo.qs.dto.QueueUserUpdateDTO
 import com.telemondo.qs.dto.QueueUserUpdateStatusDTO
 import com.telemondo.qs.service.QueueUserService
 import org.springframework.http.HttpStatus
@@ -14,16 +15,33 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import java.time.Instant
 
 @RestController
 @RequestMapping("/queueUser")
 class QueueUserController(
     private val queueUserService: QueueUserService
 ) {
+    data class QueueUserFilter (
+//        currentPage = -1 to go the last page
+        var currentPage: Int,
+//        pageSize = -1 to retrieve ALL records
+        var pageSize: Int,
+        val id: String?,
+        val status: Int?,
+        val ticketNum: String?,
+        val customerType: Int?,
+        val counterTypeId: String?,
+        val counterId: String?,
+        val createdAt: Instant?,
+        val updatedAt: Instant?,
+        val sortField: String?,
+        val sortDirection: String?
+    )
 
     @GetMapping
-    fun getQueueUsers(): ResponseEntity<List<QueueUserDTO>>{
-        return ResponseEntity.ok(queueUserService.getQueueUsers())
+    fun getQueueUsers(@RequestBody queueUserFilter: QueueUserFilter): ResponseEntity<List<QueueUserDTO>>{
+        return ResponseEntity.ok(queueUserService.getQueueUsers(queueUserFilter))
     }
 
     @GetMapping("/{id}")
@@ -38,8 +56,8 @@ class QueueUserController(
     }
 
     @PutMapping
-    fun updateQueueUser(@RequestBody queueUserDTO: QueueUserDTO): ResponseEntity<QueueUserDTO>{
-        return ResponseEntity.ok(queueUserService.updateQueueUser(queueUserDTO))
+    fun updateQueueUser(@RequestBody queueUserUpdateDTO: QueueUserUpdateDTO): ResponseEntity<QueueUserDTO>{
+        return ResponseEntity.ok(queueUserService.updateQueueUser(queueUserUpdateDTO))
     }
 
     @PutMapping("/updateStatus")
