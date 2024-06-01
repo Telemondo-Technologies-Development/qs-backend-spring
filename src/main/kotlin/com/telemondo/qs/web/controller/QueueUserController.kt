@@ -24,7 +24,7 @@ class QueueUserController(
 ) {
     data class QueueUserFilter (
 //        currentPage = -1 to go the last page
-        var currentPage: Int,
+        var currentPage: Int = 0,
 //        pageSize = -1 to retrieve ALL records
         var pageSize: Int,
         val id: String?,
@@ -65,7 +65,7 @@ class QueueUserController(
         return ResponseEntity.ok(queueUserService.updateQueueUserStatus(queueUserUpdateStatusDTO))
     }
 
-    @DeleteMapping("/{id}")
+    @PutMapping("/delete/{id}")
     fun deleteQueueUser(@PathVariable id: String): ResponseEntity<Unit>{
         return ResponseEntity(queueUserService.deleteQueueUser(id), HttpStatus.NO_CONTENT)
     }

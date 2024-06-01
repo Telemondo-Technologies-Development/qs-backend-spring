@@ -1,5 +1,6 @@
 package com.telemondo.qs.repository
 
+import com.telemondo.qs.entity.Counter
 import com.telemondo.qs.entity.CounterType
 import com.telemondo.qs.entity.QueueUser
 import com.telemondo.qs.web.controller.CounterTypeControllers.CounterTypeFilter
@@ -77,19 +78,23 @@ class CounterTypeDynamicFilterRepositoryImpl(
         if (filter.pageSize == -1) {
             return entityManager.createQuery(query).resultList
         }
+        // Fetch all results without pagination to get the total count
+        val allResults = entityManager.createQuery(query).resultList
+        val totalResults = allResults.size.toLong()
+
+        // Calculate the total number of pages
+//        we subtract 1 from the totalResults to make all results need an additional page whether
+//        it's divisible by the pageSize.
+//        this works because of integer division that rounds the quotient down making it imperative
+//        for an additional page to make it correct
+        val totalPages = if (totalResults == 0L) 1 else ((totalResults - 1) / filter.pageSize) + 1
+        val lastPage = totalPages.toInt() - 1
+
         // If currentPage is -1, calculate the index of the last page
         if (filter.currentPage == -1) {
-            // Create a count query to get the total number of results
-            val countQuery: CriteriaQuery<Long> = cb.createQuery(Long::class.java)
-            val countRoot: Root<CounterType> = countQuery.from(CounterType::class.java)
-            countQuery.select(cb.count(countRoot))
-            countQuery.where(*predicates.toTypedArray())
-
-            val totalResults = entityManager.createQuery(countQuery).singleResult
-            val lastPageIndex = if (totalResults == 0L) 0 else (totalResults - 1) / filter.pageSize
-            filter.currentPage = lastPageIndex.toInt()  // Update the currentPage parameter to the last page index
+            filter.currentPage = lastPage
         }
-
+        println("Last Page: $lastPage")
         return entityManager.createQuery(query).setFirstResult(filter.currentPage * filter.pageSize).setMaxResults(filter.pageSize).resultList
     }
 }

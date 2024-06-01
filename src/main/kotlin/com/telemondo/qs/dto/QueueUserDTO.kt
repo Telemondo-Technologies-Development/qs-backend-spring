@@ -16,7 +16,7 @@ data class QueueUserDTO(
 //    which would require QueueUser object again with its counter property which will have another
 //    currentCustomer property again and so on
     val counter: CounterForQueueUserDTO?,
-//    -2 = cancelled, -1 = no-show, 1 = waiting, 2 = on-counter, 3 = complete
+//   -3 = deleted, -2 = cancelled, -1 = no-show, 1 = waiting, 2 = on-counter, 3 = complete
     val status: Int = 1,
     val createdAt: Instant,
     val updatedAt: Instant

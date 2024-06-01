@@ -8,11 +8,11 @@ import com.telemondo.qs.repository.CounterTypeRepository
 import com.telemondo.qs.repository.QueueUserRepository
 import com.telemondo.qs.utils.mapper.CounterMapper
 import com.telemondo.qs.web.controller.CounterController.CounterFilter
+import io.nats.client.Connection
 import jakarta.transaction.Transactional
+import kotlinx.serialization.builtins.MapSerializer
+import kotlinx.serialization.builtins.serializer
 import org.mapstruct.factory.Mappers
-import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.Pageable
-import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -23,7 +23,8 @@ class CounterServiceImpl(
     private val counterRepository: CounterRepository,
     private val counterMapper: CounterMapper = Mappers.getMapper(CounterMapper::class.java),
     private val counterTypeRepository: CounterTypeRepository,
-    private val queueUserRepository: QueueUserRepository
+    private val queueUserRepository: QueueUserRepository,
+    private val natsConnection: Connection
 ): CounterService {
 
     @Transactional
@@ -87,17 +88,6 @@ class CounterServiceImpl(
     }
 
     @Transactional
-    override fun delCounter(id: String) {
-
-        val exists = counterRepository.existsById(id)
-
-        if (!exists) {
-            throw Exception("Counter with ID $id does not exist.")
-        }
-        counterRepository.deleteById(id)
-    }
-
-    @Transactional
     override fun counterNextCustomer(id: String, customerType: Int) {
         val counter = counterRepository.findById(id).orElseThrow{Exception("Counter with id $id does not exist.")}
 
@@ -147,6 +137,12 @@ class CounterServiceImpl(
         println("Current Customer: " + currentCustomer.ticketNum)
         println("Counter Status: " + counter.status)
 
+        val message = getCounterScreens()
+//        Create a serializer for Map<String, String>
+        val serializer = MapSerializer(String.serializer(), String.serializer())
+//        Convert Map into a format that can be represented by bytes
+        val jsonString = kotlinx.serialization.json.Json.encodeToString(serializer, message)
+        natsConnection.publish("screen-counters", jsonString.toByteArray())
     }
 
     @Transactional
@@ -195,6 +191,17 @@ class CounterServiceImpl(
         counterNextCustomer(id, 2)
     }
 
+    @Transactional
+    override fun getCounterScreens(): Map<String, String> {
+        val counters = counterRepository.findByStatusNotIn()
+
+//        convert list into dictionary with counter as the key and currentCustomer as the value
+//        associate receives a Pair object and we needed to use elvis operator for ticket num
+        val counterMap = counters.associate { Pair(it.name, it.currentCustomer?.ticketNum ?: "-") }
+        println(counterMap)
+        return counterMap
+    }
+
 
     @Transactional
     override fun pauseCounter(id: String) {
@@ -208,34 +215,11 @@ class CounterServiceImpl(
         counter.status = -1
     }
 
-    //    alternative way to update
-//    @Transactional
-//    override fun updateStatus(id: String, status: Int): CounterDTO {
-//
-//        val counter = counterRepository.findById(id).orElseThrow{(Exception("Counter with ID $id does not exist."))}
-//
-//        counter.status = status
-//
-//        counterRepository.save(counter)
-//
-//        return counterMapper.toDomain(counter)
-//    }
+    @Transactional
+    override fun delCounter(id: String) {
+        val counter = counterRepository.findById(id).orElseThrow{Exception("Counter with id $id does not exist.")}
+        counter.status = -3
+    }
 
-//    @Transactional
-//    override fun updateStatus(counterUpdateStatusDTO: CounterUpdateStatusDTO): CounterDTO {
-//
-//        var counter = counterRepository.findById(counterUpdateStatusDTO.id)
-//
-//        if (counter.isEmpty) {
-//            throw Exception("Counter with ID ${counterUpdateStatusDTO.id} does not exist.")
-//        }
-//
-//        var savedEntity = counterMapper.mapUpdateStatusToEntity(counterUpdateStatusDTO, counter.get())
-//
-//
-//        counterRepository.save(savedEntity)
-//
-//        return counterMapper.toDomain(savedEntity)
-//    }
 }
 
