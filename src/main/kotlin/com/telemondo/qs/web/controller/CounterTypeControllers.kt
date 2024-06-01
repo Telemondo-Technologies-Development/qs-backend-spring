@@ -30,7 +30,7 @@ class CounterTypeControllers(
 
     data class CounterTypeFilter(
 //        currentPage = -1 to go the last page
-        var currentPage: Int,
+        var currentPage: Int = 0,
 //        pageSize = -1 to retrieve ALL records
         var pageSize: Int,
         val id: String?,
@@ -62,7 +62,7 @@ class CounterTypeControllers(
         return ResponseEntity.ok(counterTypeService.updateCounterType(counterTypeUpdateDTO))
     }
 
-    @DeleteMapping("/{id}")
+    @PutMapping("/delete/{id}")
     fun delCounterType(@PathVariable id: String): ResponseEntity<Unit> {
         return ResponseEntity(counterTypeService.delCounterType(id), HttpStatus.NO_CONTENT)
     }

@@ -62,6 +62,7 @@ class CounterTypeServiceImpl(
 
     @Transactional
     override fun delCounterType(id: String) {
-        counterTypeRepository.deleteById(id)
+        val counterType = counterTypeRepository.findById(id).orElseThrow{Exception("Counter with id $id does not exist.")}
+        counterType.status = -3
     }
 }

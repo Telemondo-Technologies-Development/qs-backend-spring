@@ -4,6 +4,7 @@ import com.telemondo.qs.dto.CounterCreateDTO
 import com.telemondo.qs.dto.CounterDTO
 import com.telemondo.qs.dto.CounterUpdateDTO
 import com.telemondo.qs.service.CounterService
+import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -24,7 +25,7 @@ class CounterController(
 
     data class CounterFilter (
 //        currentPage = -1 to go the last page
-        var currentPage: Int,
+        var currentPage: Int = 0,
 //        pageSize = -1 to retrieve ALL records
         var pageSize: Int,
         val id: String?,
@@ -93,7 +94,7 @@ class CounterController(
         return ResponseEntity.ok(counterService.turnOffCounter(id))
     }
 
-    @DeleteMapping("/{id}")
+    @PutMapping("/delete/{id}")
     fun deleteCounter(@PathVariable id: String): ResponseEntity<Unit>{
         return ResponseEntity(counterService.delCounter(id), HttpStatus.NO_CONTENT)
     }

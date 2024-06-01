@@ -12,6 +12,7 @@ open class CounterType{
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     open lateinit var id: String
+    open var status: Int = 1
     open lateinit var counterName: String
     @Column(unique = true)
     open lateinit var prefix : String

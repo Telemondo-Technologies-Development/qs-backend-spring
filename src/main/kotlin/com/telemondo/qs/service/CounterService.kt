@@ -4,6 +4,7 @@ import com.telemondo.qs.dto.CounterCreateDTO
 import com.telemondo.qs.dto.CounterDTO
 import com.telemondo.qs.dto.CounterUpdateDTO
 import com.telemondo.qs.web.controller.CounterController.CounterFilter
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 
 @Service
@@ -28,6 +29,8 @@ interface CounterService {
     fun nextRegularCustomer(id:String)
 
     fun nextNonRegularCustomer(id:String)
+
+    fun getCounterScreens(): Map<String, String>
 
     fun pauseCounter(id: String)
 

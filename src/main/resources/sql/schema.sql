@@ -13,6 +13,7 @@
 
 CREATE TABLE IF NOT EXISTS counter_types (
     id VARCHAR(36) PRIMARY KEY,
+    status INT DEFAULT 1,
     counter_type VARCHAR(36) NOT NULL,
     prefix VARCHAR(36) NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,

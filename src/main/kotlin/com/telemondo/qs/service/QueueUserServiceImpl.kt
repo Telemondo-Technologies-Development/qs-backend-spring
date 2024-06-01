@@ -59,9 +59,6 @@ class QueueUserServiceImpl(
         queueUser.counterType = counterType
         queueUser.ticketNum = ticketNum
         queueUserRepository.save(queueUser)
-//        sends a notification to frontend that queueUser was created
-        val message = "Queue user created: ${queueUser.ticketNum}"
-        natsConnection.publish("queue-user-created", message.toByteArray())
 ////        for frontend
 //        // Example using NATS.js library for Node.js
 //        const { connect } = require('nats');
@@ -77,6 +74,9 @@ class QueueUserServiceImpl(
 //            });
 //        });
         val queueUserDomain = queueUserMapper.toDomain(queueUser)
+        //        sends a notification to frontend that queueUser was created
+        val message = "Queue user created: ${queueUser.ticketNum}"
+        natsConnection.publish("queue-user-created-channel", message.toByteArray())
         return queueUserDomain
     }
 
@@ -115,13 +115,9 @@ class QueueUserServiceImpl(
     @Transactional
     override fun deleteQueueUser(id: String) {
 
-        val queueUser = queueUserRepository.existsById(id)
+        val queueUser = queueUserRepository.findById(id).orElseThrow{Exception("Counter with ID $id does not exist.")}
 
-        if(!queueUser){
-            throw Exception("Counter with ID $id does not exist.")
-        }
-
-        queueUserRepository.deleteById(id)
+        queueUser.status = -3
     }
 
 
