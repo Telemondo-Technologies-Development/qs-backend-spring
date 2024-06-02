@@ -18,4 +18,5 @@ interface QueueUserRepository: JpaRepository<QueueUser, String>, QueueUserDynami
                                                                                         status: Int,
                                                                                         createdAt: Instant): List<QueueUser>
 
+    fun findTop10ByCounterTypeIdOrderByEntertainedAtDesc(counterTypeId: String): List<QueueUser>
 }

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import java.time.Instant
 
@@ -27,7 +28,7 @@ class CounterController(
 //        currentPage = -1 to go the last page
         var currentPage: Int = 0,
 //        pageSize = -1 to retrieve ALL records
-        var pageSize: Int,
+        var pageSize: Int = 10,
         val id: String?,
         val status: Int?,
         val name: String?,
@@ -40,8 +41,31 @@ class CounterController(
     )
 
     @GetMapping
-    fun getCounters(@RequestBody counterFilter: CounterFilter): ResponseEntity<List<CounterDTO>>{
-        return ResponseEntity.ok(counterService.getCounters(counterFilter))
+    fun getCounters(@RequestParam(required = false) currentPage: Int?,
+                    @RequestParam(required = false) pageSize: Int?,
+                    @RequestParam(required = false) id: String?,
+                    @RequestParam(required = false) status: Int?,
+                    @RequestParam(required = false) name: String?,
+                    @RequestParam(required = false) currentCustomerId: String?,
+                    @RequestParam(required = false) counterTypeId: String?,
+                    @RequestParam(required = false) createdAt: Instant?,
+                    @RequestParam(required = false) updatedAt: Instant?,
+                    @RequestParam(required = false) sortField: String?,
+                    @RequestParam(required = false) sortDirection: String?): ResponseEntity<List<CounterDTO>>{
+        val filter = CounterFilter(
+            currentPage = currentPage ?: 0,
+            pageSize = pageSize ?: 10, // Change default value to -1 to retrieve all records
+            id = id,
+            status = status,
+            name = name,
+            currentCustomerId = currentCustomerId,
+            counterTypeId = counterTypeId,
+            createdAt = createdAt,
+            updatedAt = updatedAt,
+            sortField = sortField,
+            sortDirection = sortDirection
+        )
+        return ResponseEntity.ok(counterService.getCounters(filter))
     }
 
     @GetMapping("/{id}")

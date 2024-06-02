@@ -15,6 +15,7 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
+import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -58,6 +59,7 @@ class QueueUserServiceImpl(
         val ticketNum = generateTicketNum(queueUserCreateDTO)
         queueUser.counterType = counterType
         queueUser.ticketNum = ticketNum
+        queueUser.estimatedWaitTime = calculateEstimatedWaitTime(queueUserCreateDTO.counterTypeId)
         queueUserRepository.save(queueUser)
 ////        for frontend
 //        // Example using NATS.js library for Node.js
@@ -149,5 +151,20 @@ class QueueUserServiceImpl(
         count += 1
         
         return prefix + "-" + count.toString().padStart(3, '0') + suffix
+    }
+
+    @Transactional
+    override fun calculateEstimatedWaitTime(counterTypeId: String): String {
+        val queueUsers = queueUserRepository.findTop10ByCounterTypeIdOrderByEntertainedAtDesc(counterTypeId)
+        var waitTimeTotal: Long = 0
+        for (q in queueUsers){
+//            calculation of difference between createdAt and entertainedAt
+            val waitTime = Duration.between(q.createdAt, q.entertainedAt).toMinutes()
+//            incrementing
+            waitTimeTotal += waitTime
+        }
+//        calculation of average
+        val estimatedWaitTime = waitTimeTotal/queueUsers.size
+        return "${estimatedWaitTime.toString()}m"
     }
 }

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import java.time.Instant
 
@@ -26,13 +27,14 @@ class QueueUserController(
 //        currentPage = -1 to go the last page
         var currentPage: Int = 0,
 //        pageSize = -1 to retrieve ALL records
-        var pageSize: Int,
+        var pageSize: Int = 10,
         val id: String?,
         val status: Int?,
         val ticketNum: String?,
         val customerType: Int?,
         val counterTypeId: String?,
         val counterId: String?,
+        val entertainedAt: Instant?,
         val createdAt: Instant?,
         val updatedAt: Instant?,
         val sortField: String?,
@@ -40,8 +42,37 @@ class QueueUserController(
     )
 
     @GetMapping
-    fun getQueueUsers(@RequestBody queueUserFilter: QueueUserFilter): ResponseEntity<List<QueueUserDTO>>{
-        return ResponseEntity.ok(queueUserService.getQueueUsers(queueUserFilter))
+    fun getQueueUsers(@RequestParam(required = false) currentPage: Int?,
+                      @RequestParam(required = false) pageSize: Int?,
+                      @RequestParam(required = false) id: String?,
+                      @RequestParam(required = false) status: Int?,
+                      @RequestParam(required = false) ticketNum: String?,
+                      @RequestParam(required = false) customerType: Int?,
+                      @RequestParam(required = false) counterTypeId: String?,
+                      @RequestParam(required = false) counterId: String?,
+                      @RequestParam(required = false) createdAt: Instant?,
+                      @RequestParam(required = false) entertainedAt: Instant?,
+                      @RequestParam(required = false) updatedAt: Instant?,
+                      @RequestParam(required = false) sortField: String?,
+                      @RequestParam(required = false) sortDirection: String?): ResponseEntity<List<QueueUserDTO>>{
+        val filter =  QueueUserFilter (
+//        currentPage = -1 to go the last page
+            currentPage = currentPage ?: 0,
+//        pageSize = -1 to retrieve ALL records
+            pageSize = pageSize ?: 10,
+            id = id,
+            status = status,
+            ticketNum = ticketNum,
+            customerType = customerType,
+            counterTypeId = counterTypeId,
+            counterId = counterId,
+            createdAt = createdAt,
+            entertainedAt = entertainedAt,
+            updatedAt = updatedAt,
+            sortField = sortField,
+            sortDirection = sortDirection
+        )
+        return ResponseEntity.ok(queueUserService.getQueueUsers(filter))
     }
 
     @GetMapping("/{id}")

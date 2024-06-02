@@ -19,6 +19,8 @@ data class QueueUserDTO(
 //   -3 = deleted, -2 = cancelled, -1 = no-show, 1 = waiting, 2 = on-counter, 3 = complete
     val status: Int = 1,
     val createdAt: Instant,
+    val entertainedAt: Instant,
+    val estimatedWaitTime: String,
     val updatedAt: Instant
 )
 
