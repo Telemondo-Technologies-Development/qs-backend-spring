@@ -44,6 +44,8 @@ CREATE TABLE IF NOT EXISTS queue_users (
     --  -1 = cancelled, 1 = waiting, 2 = on-counter, 3 = complete
     status INT DEFAULT 1,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    entertained_at TIMESTAMP NOT NULL,
+    estimated_wait_time VARCHAR NOT NULL,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (counter_type_id) REFERENCES counter_types(id),
     FOREIGN KEY (counter_id) REFERENCES counters(id)

@@ -24,4 +24,6 @@ interface QueueUserService {
 
     fun generateTicketNum(queueUserCreateDTO: QueueUserCreateDTO): String
 
+    fun calculateEstimatedWaitTime(counterTypeId: String): String
+
 }

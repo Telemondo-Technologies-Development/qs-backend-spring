@@ -14,6 +14,7 @@ import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.builtins.serializer
 import org.mapstruct.factory.Mappers
 import org.springframework.stereotype.Service
+import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -128,6 +129,9 @@ class CounterServiceImpl(
 //        populate counter property of current customer
         currentCustomer.counter = counter
         counter.currentCustomer?.status = 2
+
+//        define currentCustomer's entertainedAt timestamp
+        currentCustomer.entertainedAt = Instant.now()
 
 //        change the status into entertaining
         counter.status = 2

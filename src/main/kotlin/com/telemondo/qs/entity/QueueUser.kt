@@ -32,6 +32,8 @@ open class QueueUser{
     open var counter: Counter? = null
     @Column
     open var status: Int = 1
+    open var entertainedAt: Instant = Instant.now()
+    open lateinit var estimatedWaitTime: String
     @CreationTimestamp
     open var createdAt: Instant = Instant.now()
     @UpdateTimestamp
